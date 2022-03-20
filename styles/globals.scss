@@ -1,16 +1,94 @@
-html,
+$blue: #3698eb !default;
+$indigo: #6610f2 !default;
+$purple: #6f42c1 !default;
+$pink: #d63384 !default;
+$red: #d70018 !default;
+$orange: #fd7e14 !default;
+$yellow: #ffc107 !default;
+$green: #198754 !default;
+$teal: #20c997 !default;
+$cyan: #0dcaf0 !default;
+
+@import "../node_modules/bootstrap/scss/bootstrap.scss";
+
+textarea:focus,
+textarea.form-control:focus,
+input.form-control:focus,
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+input[type="number"]:focus,
+[type="text"].form-control:focus,
+[type="password"].form-control:focus,
+[type="email"].form-control:focus,
+[type="tel"].form-control:focus,
+[contenteditable].form-control:focus {
+  box-shadow: inset 0 -1px 0 #fff;
+}
+
+.navbar-light .navbar-toggler {
+  border: none;
+}
 body {
-  padding: 0;
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  background-color: #f8f9fa;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+.custom-account {
+  display: none;
 }
 
-* {
-  box-sizing: border-box;
+.animation-open {
+  animation: openNav 0.5s;
+  width: 200%;
+}
+
+.animation-close {
+  animation: closeNav 0.5s;
+  // display: none !important;
+  -webkit-animation-fill-mode: forwards; /* Chrome 16+, Safari 4+ */
+  -moz-animation-fill-mode: forwards; /* FF 5+ */
+  -o-animation-fill-mode: forwards; /* Not implemented yet */
+  -ms-animation-fill-mode: forwards; /* IE 10+ */
+  animation-fill-mode: forwards;
+}
+
+@keyframes openNav {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 0px;
+  }
+}
+
+@keyframes closeNav {
+  0% {
+    left: 0px;
+  }
+  100% {
+    left: -100%;
+  }
+}
+
+@media (max-width: 992px) {
+  .custom-nav {
+    flex-direction: row-reverse;
+  }
+  .custom-account {
+    display: block;
+  }
+}
+
+.natigation-item {
+  display: flex;
+  align-items: center;
+  padding: 1px 1px 1px 10px;
+  justify-content: center;
+  cursor: pointer;
+  margin: 0 0 0 10px;
+}
+
+.natigation-item:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
 }

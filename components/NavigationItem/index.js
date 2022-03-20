@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function NavigationItem({ linkTo, text, icon }) {
   return (
     <div className="natigation-item">
-      <div>{icon}</div>
+      {icon}
       <div
         style={{
           fontSize: 14,

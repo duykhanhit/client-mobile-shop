@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import Link from "next/link";
-import { AiOutlineMenu } from "react-icons/ai";
+import { AiOutlineMenu, AiOutlineShoppingCart } from "react-icons/ai";
 import { RiAccountCircleLine } from "react-icons/ri";
+import { BiUserCircle } from "react-icons/bi";
+import { FaShippingFast } from "react-icons/fa";
+import { GoLocation } from "react-icons/go";
+import { VscCallIncoming } from "react-icons/vsc";
 import InputCuscom from "@components/InputCustom";
 import NavigationItem from "@components/NavigationItem";
 
@@ -49,35 +53,35 @@ export default function Navigation() {
                   <NavigationItem
                     linkTo="/category/game"
                     text="Gọi mua hàng"
-                    icon={<AiOutlineMenu color="white" />}
+                    icon={<VscCallIncoming color="white" />}
                   />
                 </li>
                 <li className="nav-item">
                   <NavigationItem
                     linkTo="/category/game"
                     text="Cửa hàng gần bạn"
-                    icon={<AiOutlineMenu color="white" />}
+                    icon={<GoLocation color="white" />}
                   />
                 </li>
                 <li className="nav-item">
                   <NavigationItem
                     linkTo="/category/game"
                     text="Tra cứu đơn hàng"
-                    icon={<AiOutlineMenu color="white" />}
+                    icon={<FaShippingFast color="white" />}
                   />
                 </li>
                 <li className="nav-item">
                   <NavigationItem
                     linkTo="/category/game"
                     text="Giỏ hàng"
-                    icon={<AiOutlineMenu color="white" />}
+                    icon={<AiOutlineShoppingCart color="white" />}
                   />
                 </li>
                 <li className="nav-item">
                   <NavigationItem
                     linkTo="/category/game"
                     text="Smember"
-                    icon={<AiOutlineMenu color="white" />}
+                    icon={<BiUserCircle color="white" />}
                   />
                 </li>
               </ul>

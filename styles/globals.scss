@@ -92,3 +92,66 @@ body {
   background: rgba(255, 255, 255, 0.2);
   border-radius: 10px;
 }
+
+.custom-scale:hover {
+  transform: scale(1.05);
+  transition: 0.5 all;
+}
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.border-radius-10 {
+  border-radius: 10px;
+}
+
+.hdk-menu {
+  background-color: white;
+  border-radius: 10px;
+  box-sizing: border-box;
+  font-size: 14px;
+  position: relative;
+}
+.hdk-menu-item {
+  cursor: pointer;
+  padding: 5px 10px;
+  display: flex;
+  align-items: center;
+}
+.hdk-menu-item:hover,
+.hdk-menu-item-detail:hover {
+  background-color: #ecf0f1;
+}
+.hdk-menu-item:first-child:hover {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+.hdk-menu-item:last-child:hover {
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+.hdk-menu-item-detail:first-child:hover {
+  border-top-right-radius: 10px;
+}
+.hdk-menu-item-detail:last-child:hover {
+  border-bottom-right-radius: 10px;
+}
+.hdk-menu-item-details {
+  background-color: white;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  position: absolute;
+  left: 100%;
+  top: 0;
+  z-index: 999;
+  display: none;
+}
+
+.hdk-menu-item:hover .hdk-menu-item-details {
+  display: block;
+}
+
+.hdk-menu-item-detail {
+  padding: 5px 10px;
+  width: 150px;
+}

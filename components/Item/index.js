@@ -14,7 +14,7 @@ export default function Item() {
           width="160px"
           height="160px"
         />
-        <Link href="/product">
+        <Link href="/product/iphone">
           <a className="text-decoration-none link-dark">
             <h6 className="text-center pt-3">
               iPhone SE 2022 | Chính hãng VN/A

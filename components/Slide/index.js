@@ -1,17 +1,38 @@
 import React from "react";
 import { Col, Container, Row, UncontrolledCarousel } from "reactstrap";
 import Image from "next/image";
+import Link from "next/link";
 import { AiOutlineMobile } from "react-icons/ai";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { BsLaptop, BsTablet } from "react-icons/bs";
 
-export default function Slide() {
+export default function Slide({ dataCategory }) {
   return (
     <Container className="mt-3">
       <Row className="row row-cols-1 row-cols-xl-3">
         <Col className="d-none d-sm-none d-md-none d-lg-none d-xl-block col-xl-2">
           <div className="hdk-menu">
-            <div className="hdk-menu-item">
+            {dataCategory.items.map((e) => (
+              <div className="hdk-menu-item" key={e.id}>
+                <AiOutlineMobile />
+                <Link href={`/category/${e.id}`}>
+                  <a className="text-decoration-none link-dark">{e.name}</a>
+                </Link>
+
+                {/* <MdKeyboardArrowRight
+                  style={{
+                    right: 5,
+                    position: "absolute",
+                  }}
+                /> */}
+                {/* <div className="hdk-menu-item-details">
+                  <div className="hdk-menu-item-detail">HP 123</div>
+                  <div className="hdk-menu-item-detail">Dell</div>
+                  <div className="hdk-menu-item-detail">Acer</div>
+                </div> */}
+              </div>
+            ))}
+            {/* <div className="hdk-menu-item">
               <AiOutlineMobile />
               Điện thoại
               <MdKeyboardArrowRight
@@ -64,18 +85,12 @@ export default function Slide() {
             <div className="hdk-menu-item">Hàng cũ</div>
             <div className="hdk-menu-item">Điện máy</div>
             <div className="hdk-menu-item">Tin công nghệ</div>
-            <div className="hdk-menu-item">Khuyến mãi</div>
+            <div className="hdk-menu-item">Khuyến mãi</div> */}
           </div>
         </Col>
         <Col className="col-xl-8">
           <UncontrolledCarousel
             items={[
-              {
-                altText: "Slide 1",
-                caption: "Slide 1",
-                key: 1,
-                src: "https://cdn.cellphones.com.vn/media/ltsoft/promotion/A53.png",
-              },
               {
                 altText: "Slide 2",
                 caption: "Slide 2",

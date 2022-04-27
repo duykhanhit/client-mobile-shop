@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { AiOutlineMenu, AiOutlineShoppingCart } from "react-icons/ai";
 import { RiAccountCircleLine } from "react-icons/ri";
@@ -9,7 +9,7 @@ import { VscCallIncoming } from "react-icons/vsc";
 import InputCuscom from "@components/InputCustom";
 import NavigationItem from "@components/NavigationItem";
 
-export default function Navigation() {
+export default function Navigation({ dataCategory }) {
   const [visible, setVisible] = useState(false);
   const [addClass, setAddClass] = useState(" d-none");
 
@@ -97,7 +97,7 @@ export default function Navigation() {
         <div style={{ width: "40%" }} className={"bg-white vh-100 shadow p-0"}>
           <div className="border-bottom d-flex justify-content-between align-items-center">
             <Link href="/">
-              <a className="navbar-brand text-primary p-2 fs-1">TaiGameAPK</a>
+              <a className="navbar-brand text-primary p-2 fs-1">cellphoneS</a>
             </Link>
             <span
               onClick={() => handleToggleMenu()}
@@ -107,14 +107,22 @@ export default function Navigation() {
               <span aria-hidden="true">&times;</span>
             </span>
           </div>
-          <div className="border-bottom p-2">Game Mod</div>
-          <div className="border-bottom p-2">Game Miễn Phí</div>
-          <div className="border-bottom p-2">Ứng dụng</div>
+          {dataCategory.items.map((e) => (
+            <div
+              className="border-bottom p-2"
+              key={e.id}
+              onClick={() => handleToggleMenu()}
+            >
+              <Link href={`/category/${e.id}`}>
+                <a className="text-decoration-none link-dark">{e.name}</a>
+              </Link>
+            </div>
+          ))}
           <div
             style={{ width: "100%" }}
             className="border-top p-2 position-absolute bottom-0"
           >
-            Bản quyền thuộc TaiGameAPK
+            Bản quyền thuộc cellphoneS
           </div>
         </div>
         <div

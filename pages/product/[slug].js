@@ -34,13 +34,15 @@ import {
 import CountReview from "@components/CountReview";
 import Comment from "@components/Comment";
 import Link from "next/link";
+import { BASE_URL } from "constants/config";
+import { formatMoney } from "common/common";
 
-export default function Product() {
+export default function Product({ data, dataCategory }) {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState();
 
   return (
-    <MainLayout>
+    <MainLayout title={data.name} dataCategory={dataCategory}>
       <div
         className="border-radius-10"
         style={{
@@ -69,32 +71,18 @@ export default function Product() {
           backgroundColor: "white",
         }}
       >
-        <h5 className="p-2">iPhone 13 Pro Max 256GB I Chính hãng VN/A</h5>
+        <h5 className="p-2">{data.name}</h5>
       </div>
       <Container>
         <div className="bg-white border-radius-10 pt-3 row row-cols-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-3">
           <Col className="col-xl-4">
             <UncontrolledCarousel
-              items={[
-                {
-                  altText: "Slide 1",
-                  captionText: "Slide 1",
-                  key: 1,
-                  src: "https://cdn.cellphones.com.vn/media/ltsoft/promotion/A53.png",
-                },
-                {
-                  altText: "Slide 2",
-                  captionText: "Slide 2",
-                  key: 2,
-                  src: "https://cdn.cellphones.com.vn/media/ltsoft/promotion/mI_12.png",
-                },
-                {
-                  altText: "Slide 3",
-                  captionText: "Slide 3",
-                  key: 3,
-                  src: "https://cdn.cellphones.com.vn/media/ltsoft/promotion/reno7.png",
-                },
-              ]}
+              items={data.productImages.map((e, i) => ({
+                altText: "Slide 1",
+                captionText: "Slide 1",
+                key: i,
+                src: `${BASE_URL}/${e.url}`,
+              }))}
               className="border-radius-10"
             />
           </Col>
@@ -106,13 +94,13 @@ export default function Product() {
                   color: "red",
                 }}
               >
-                33.000.000 ₫
+                {formatMoney(data.productVersions[0].salePrice)}
               </span>
               &nbsp;&nbsp;
-              <del>37.990.000 ₫</del>
+              <del>{formatMoney(data.productVersions[0].price)}</del>
             </p>
             <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-3">
-              {[1, 2, 3, 4, 5].map((e) => (
+              {data.productVersions.map((e) => (
                 <Col className="mb-2">
                   <Button
                     key={e}
@@ -121,7 +109,9 @@ export default function Product() {
                     outline
                     style={{ width: "100%" }}
                   >
-                    {`${e}000`}
+                    {e.color.name} - {e.storage.name}
+                    <br />
+                    {formatMoney(e.salePrice || e.price)}
                   </Button>
                 </Col>
               ))}
@@ -191,12 +181,9 @@ export default function Product() {
               <CardBody>
                 <CardTitle tag="h5">Mô tả sản phẩm</CardTitle>
                 <CardSubtitle className="mb-2 text-muted" tag="h6">
-                  Card subtitle
+                  {data.shortDescription}
                 </CardSubtitle>
-                <CardText>
-                  Some quick example text to build on the card title and make up
-                  the bulk of the card's content.
-                </CardText>
+                <CardText>{data.description}</CardText>
               </CardBody>
             </Card>
 
@@ -345,31 +332,12 @@ export default function Product() {
                 <h6>Thông số kỹ thuật</h6>
                 <Table striped>
                   <tbody>
-                    <tr>
-                      <td>Kích thước màn hình</td>
-                      <td>6.7 inches</td>
-                    </tr>
-                    <tr>
-                      <td>Công nghệ màn hình </td>
-                      <td>OLED</td>
-                    </tr>
-                    <tr>
-                      <td>Camera sau </td>
-                      <td>
-                        Camera góc rộng: 12MP, ƒ/1.5
-                        <br />
-                        Camera góc siêu rộng: 12MP, ƒ/1.8 <br />
-                        Camera tele : 12MP, /2.8
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>Camera trước </td>
-                      <td>12MP, ƒ/2.2</td>
-                    </tr>
-                    <tr>
-                      <td>Chipset</td>
-                      <td>Apple A15</td>
-                    </tr>
+                    {data.specifications.map((e) => (
+                      <tr>
+                        <td>{e.name}</td>
+                        <td>{e.content}</td>
+                      </tr>
+                    ))}
                   </tbody>
                 </Table>
               </CardBody>
@@ -379,4 +347,19 @@ export default function Product() {
       </Container>
     </MainLayout>
   );
+}
+
+export async function getServerSideProps(context) {
+  // Fetch data from external API
+  const res = await fetch(`${BASE_URL}/api/product/${context.params.slug}`);
+  const data = await res.json();
+  if (data.statusCode === 404) {
+    return {
+      notFound: true,
+    };
+  }
+  const categories = await fetch(`${BASE_URL}/api/category`);
+  const dataCategory = await categories.json();
+  // Pass data to the page via props
+  return { props: { data: data.data, dataCategory: dataCategory.data } };
 }

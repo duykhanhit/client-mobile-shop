@@ -51,7 +51,6 @@ export const getFromLocal = (key) => {
 
 export const deleteItemInLocal = (id) => {
   const items = getFromLocal("cart");
-  console.log("items", items);
   const newItems = items.filter((e) => e.version.id !== id);
   typeof window !== "undefined" &&
     localStorage.setItem(

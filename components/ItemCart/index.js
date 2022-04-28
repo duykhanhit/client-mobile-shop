@@ -17,7 +17,7 @@ import {
 import { BASE_URL } from "constants/config";
 import { deleteItemInLocal } from "common/local-storage";
 
-export default function ItemCart({ product }) {
+export default function ItemCart({ product, setIsDelete, isDelete }) {
   return (
     <Card className="border-radius-10 mt-3 mb-3">
       <CardBody className="pt-0 pb-0">
@@ -74,7 +74,10 @@ export default function ItemCart({ product }) {
           </div>
           <div
             className="cursor-pointer"
-            onClick={() => deleteItemInLocal(product.version.id)}
+            onClick={() => {
+              deleteItemInLocal(product.version.id);
+              setIsDelete(!isDelete);
+            }}
           >
             <AiOutlineMinusCircle />
           </div>

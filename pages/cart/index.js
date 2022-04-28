@@ -33,11 +33,12 @@ import { STEP_ORDER, STEP_ORDER_ENUM } from "constants/filter.constant";
 
 export default function Product({ data, dataCategory }) {
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const [isDelete, setIsDelete] = useState(false);
   const [step, setStep] = useState(0);
   const router = useRouter();
   useEffect(() => {
     router.replace(router.asPath);
-  }, [getFromLocal("cart")]);
+  }, [isDelete]);
 
   return (
     <MainLayout title={"Giỏ hàng"} dataCategory={dataCategory}>
@@ -54,7 +55,13 @@ export default function Product({ data, dataCategory }) {
           <Col className="col-xl-6 col-lg-9 col-12 bg-white border-radius-10 ">
             {step === STEP_ORDER_ENUM.CART ? (
               getFromLocal("cart")?.length ? (
-                getFromLocal("cart").map((e) => <ItemCart product={e} />)
+                getFromLocal("cart").map((e) => (
+                  <ItemCart
+                    setIsDelete={setIsDelete}
+                    isDelete={isDelete}
+                    product={e}
+                  />
+                ))
               ) : (
                 <h4 className="text-center">Giỏ hàng trống</h4>
               )

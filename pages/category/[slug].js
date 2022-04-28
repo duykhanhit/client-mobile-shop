@@ -19,6 +19,14 @@ export default function Category({
 }) {
   const router = useRouter();
 
+  const refreshData = () => {
+    const { slug } = router.query;
+    delete router.query.slug;
+    router.replace(
+      `${router.pathname.replace(`[slug]`, slug)}?${stringify(router.query)}`
+    );
+  };
+
   const handleSelectBranch = (e) => {
     const { value } = e.target;
     if (+value !== 0) {
@@ -28,6 +36,7 @@ export default function Category({
       delete router.query.branchId;
       router.push(router, undefined, { shallow: true });
     }
+    refreshData();
   };
 
   const handleSelectStorage = (e) => {
@@ -39,6 +48,7 @@ export default function Category({
       delete router.query.storageId;
       router.push(router, undefined, { shallow: true });
     }
+    refreshData();
   };
 
   const handleSelectPrice = (e) => {
@@ -50,18 +60,19 @@ export default function Category({
       delete router.query.price;
       router.push(router, undefined, { shallow: true });
     }
+    refreshData();
   };
 
-  const handleSelectScreen = (e) => {
-    const { value } = e.target;
-    if (+value !== 0) {
-      router.query.screen = value;
-      router.push(router, undefined, { shallow: true });
-    } else {
-      delete router.query.screen;
-      router.push(router, undefined, { shallow: true });
-    }
-  };
+  // const handleSelectScreen = (e) => {
+  //   const { value } = e.target;
+  //   if (+value !== 0) {
+  //     router.query.screen = value;
+  //     router.push(router, undefined, { shallow: true });
+  //   } else {
+  //     delete router.query.screen;
+  //     router.push(router, undefined, { shallow: true });
+  //   }
+  // };
 
   return (
     <MainLayout title={dataCategory.name} dataCategory={dataCategories}>
@@ -76,6 +87,7 @@ export default function Category({
             name="select"
             type="select"
             onChange={handleSelectBranch}
+            value={router.query.branchId}
           >
             <option value={0} key={0}>
               Tất cả
@@ -94,6 +106,7 @@ export default function Category({
             name="select"
             type="select"
             onChange={handleSelectPrice}
+            value={router.query.price}
           >
             {PRICE_FILTER_TITLE.map((e, i) => (
               <option value={i} key={i}>
@@ -109,6 +122,7 @@ export default function Category({
             name="select"
             type="select"
             onChange={handleSelectStorage}
+            value={router.query.storageId}
           >
             <option value={0} key={0}>
               Tất cả

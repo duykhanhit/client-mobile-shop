@@ -1,7 +1,8 @@
+import { formatTime, handleRate } from "common/common";
 import React from "react";
 import { AiFillStar } from "react-icons/ai";
 
-export default function Comment() {
+export default function Comment({ data }) {
   return (
     <div className="mt-3">
       <div className="d-flex justify-content-between align-items-center">
@@ -13,17 +14,17 @@ export default function Comment() {
               padding: "5px 12px",
             }}
           >
-            P
+            {data.fullname.split("")[0]}
           </div>
           <div
             style={{
               marginLeft: 5,
             }}
           >
-            Phong
+            {data.fullname}
           </div>
         </div>
-        <div> 2022-01-12T11:36:56</div>
+        <div> {formatTime(data.createdAt)}</div>
       </div>
       <div
         className="border-radius-10 mt-2"
@@ -34,15 +35,16 @@ export default function Comment() {
       >
         <p>
           <b>Đánh giá: </b>
-          <AiFillStar color="yellow" />
-          <AiFillStar color="yellow" />
-          <AiFillStar color="yellow" />
-          <AiFillStar color="yellow" />
-          <AiFillStar color="yellow" />
+          {handleRate(data.rate, data.count)[0].map((e) => (
+            <AiFillStar color="yellow" key={e} />
+          ))}
+          {handleRate(data.rate, data.count)[1].map((e) => (
+            <AiFillStar color="gray" key={e} />
+          ))}
         </p>
         <p>
           <b>Nhận xét: </b>
-          Mặt hàng thật tuyệt vời!
+          {data.content}
         </p>
       </div>
     </div>

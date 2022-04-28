@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { AiFillStar } from "react-icons/ai";
 import Image from "next/image";
 import Link from "next/link";
-import { formatMoney } from "common/common";
+import { formatMoney, handleRate } from "common/common";
 import { BASE_URL } from "constants/config";
 
 export default function Item({ item }) {
@@ -22,16 +22,26 @@ export default function Item({ item }) {
           </a>
         </Link>
         <p>
-          {formatMoney(
-            item.productVersions[0].salePrice || item.productVersions[0].price
-          )}
+          <span
+            style={{
+              color: "red",
+            }}
+          >
+            {" "}
+            {formatMoney(
+              item.productVersions[0].salePrice || item.productVersions[0].price
+            )}
+          </span>
         </p>
         <p>
-          <AiFillStar color="yellow" />
-          <AiFillStar color="yellow" />
-          <AiFillStar color="yellow" />
-          <AiFillStar color="yellow" />
-          <AiFillStar color="yellow" /> 0 đánh giá
+          {handleRate(item.review.rate, item.review.count)[0].map((e) => (
+            <AiFillStar color="yellow" key={e} />
+          ))}
+          {handleRate(item.review.rate, item.review.count)[1].map((e) => (
+            <AiFillStar color="gray" key={e} />
+          ))}
+          &nbsp;
+          {item.review?.count || 0} đánh giá
         </p>
       </div>
     </div>

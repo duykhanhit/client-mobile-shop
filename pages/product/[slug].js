@@ -35,11 +35,40 @@ import CountReview from "@components/CountReview";
 import Comment from "@components/Comment";
 import Link from "next/link";
 import { BASE_URL } from "constants/config";
-import { formatMoney } from "common/common";
+import { formatMoney, handleRate } from "common/common";
+import parse from "html-react-parser";
+import { isEmpty } from "lodash";
 
 export default function Product({ data, dataCategory }) {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState();
+  console.log("selectedItem", selectedItem);
+
+  const handleCalCulateReview = () => {
+    const reviewMap = new Map();
+    for (let i = 1; i <= 5; i++) {
+      reviewMap.set(i, {
+        star: i,
+        count: 0,
+      });
+    }
+    data.reviews.forEach((e) => {
+      reviewMap.set(e.rate, {
+        ...reviewMap.get(e.rate),
+        count: reviewMap.get(e.rate).count + 1,
+      });
+    });
+
+    const reviews = [];
+    reviewMap.forEach((value, key) => {
+      reviews.push({
+        count: value.count,
+        star: key,
+        progress: (value.count / (data.reviews?.length || 1)) * 100,
+      });
+    });
+    return reviews;
+  };
 
   return (
     <MainLayout title={data.name} dataCategory={dataCategory}>
@@ -56,12 +85,12 @@ export default function Product({ data, dataCategory }) {
             </Link>
           </BreadcrumbItem>
           <BreadcrumbItem className="p-2">
-            <Link href="/category/dien-thoai">
-              <a className="text-decoration-none">Điện thoại</a>
+            <Link href={`/category/${data.category.id}`}>
+              <a className="text-decoration-none">{data.category.name}</a>
             </Link>
           </BreadcrumbItem>
           <BreadcrumbItem active tag="span" className="p-2">
-            iPhone
+            {data.branch.name}
           </BreadcrumbItem>
         </Breadcrumb>
       </div>
@@ -164,13 +193,7 @@ export default function Product({ data, dataCategory }) {
             <Card className="border-radius-10">
               <CardBody>
                 <CardTitle tag="h5">Thông tin máy</CardTitle>
-                <CardText>
-                  <AiOutlineMobile /> Nguyên hộp, đầy đủ phụ kiện từ nhà sản
-                  xuất <br />
-                  <AiOutlineFileProtect /> Bảo hành 12 tháng tại trung tâm bảo
-                  hành chính hãng Apple Việt Nam. 1 ĐỔI 1 trong 30 ngày nếu có
-                  lỗi phần cứng nhà sản xuất. (xem chi tiết)
-                </CardText>
+                <CardText>{parse(data.shortDescription || "")}</CardText>
               </CardBody>
             </Card>
           </Col>
@@ -181,9 +204,9 @@ export default function Product({ data, dataCategory }) {
               <CardBody>
                 <CardTitle tag="h5">Mô tả sản phẩm</CardTitle>
                 <CardSubtitle className="mb-2 text-muted" tag="h6">
-                  {data.shortDescription}
+                  {parse(data.shortDescription || "")}
                 </CardSubtitle>
-                <CardText>{data.description}</CardText>
+                <CardText>{parse(data.description || "")}</CardText>
               </CardBody>
             </Card>
 
@@ -193,20 +216,42 @@ export default function Product({ data, dataCategory }) {
                 <CardText>
                   <Row>
                     <Col className="text-center">
-                      <h3>4.5/5</h3>
-                      <AiFillStar color="yellow" />
-                      <AiFillStar color="yellow" />
-                      <AiFillStar color="yellow" />
-                      <AiFillStar color="yellow" />
-                      <AiFillStar color="yellow" />
-                      <p>11 đánh giá & nhận xét</p>
+                      <h3>
+                        {data.reviews?.reduce(
+                          (total, item) => total + item.rate,
+                          0
+                        ) / (data.reviews?.length || 1)}
+                        /5
+                      </h3>
+                      {handleRate(
+                        data.reviews?.reduce(
+                          (total, item) => total + item.rate,
+                          0
+                        ) / (data.reviews?.length || 1),
+                        1
+                      )[0].map((e) => (
+                        <AiFillStar color="yellow" key={e} />
+                      ))}
+                      {handleRate(
+                        data.reviews?.reduce(
+                          (total, item) => total + item.rate,
+                          0
+                        ) / (data.reviews?.length || 1),
+                        1
+                      )[1].map((e) => (
+                        <AiFillStar color="gray" key={e} />
+                      ))}
+
+                      <p>{data.reviews?.length} đánh giá & nhận xét</p>
                     </Col>
                     <Col>
-                      <CountReview count={5} progress="50%" star={5} />
-                      <CountReview count={3} progress="30%" star={4} />
-                      <CountReview count={2} progress="20%" star={3} />
-                      <CountReview count={1} progress="10%" star={2} />
-                      <CountReview count={0} progress="0%" star={1} />
+                      {handleCalCulateReview().map((e, i) => (
+                        <CountReview
+                          count={e.count}
+                          progress={`${e.progress}%`}
+                          star={e.star}
+                        />
+                      ))}
                     </Col>
                   </Row>
                 </CardText>
@@ -319,9 +364,9 @@ export default function Product({ data, dataCategory }) {
                   </div>
                 </CardText>
                 <CardText>
-                  <Comment />
-                  <Comment />
-                  <Comment />
+                  {data.reviews.map((e, i) => (
+                    <Comment key={i} data={e} />
+                  ))}
                 </CardText>
               </CardBody>
             </Card>
@@ -332,8 +377,8 @@ export default function Product({ data, dataCategory }) {
                 <h6>Thông số kỹ thuật</h6>
                 <Table striped>
                   <tbody>
-                    {data.specifications.map((e) => (
-                      <tr>
+                    {data.specifications.map((e, i) => (
+                      <tr key={i}>
                         <td>{e.name}</td>
                         <td>{e.content}</td>
                       </tr>
@@ -351,7 +396,9 @@ export default function Product({ data, dataCategory }) {
 
 export async function getServerSideProps(context) {
   // Fetch data from external API
-  const res = await fetch(`${BASE_URL}/api/product/${context.params.slug}`);
+  const res = await fetch(
+    `${BASE_URL}/api/product/${context.params.slug}?isView=1`
+  );
   const data = await res.json();
   if (data.statusCode === 404) {
     return {

@@ -222,7 +222,7 @@ export async function getServerSideProps(context) {
   const categories = await fetch(`${BASE_URL}/api/category`);
   const dataCategories = await categories.json();
 
-  if (dataCategory.statusCode === 404) {
+  if (dataCategory.statusCode !== 200) {
     return {
       notFound: true,
     };

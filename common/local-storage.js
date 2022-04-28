@@ -1,3 +1,5 @@
+import { toast } from "react-toastify";
+
 export const addToLocal = (key, value) => {
   const items =
     typeof window !== "undefined"
@@ -57,6 +59,47 @@ export const deleteItemInLocal = (id) => {
       "cart",
       JSON.stringify({
         carts: newItems,
+      })
+    );
+};
+
+export const resetItemInLocal = () => {
+  typeof window !== "undefined" &&
+    localStorage.setItem(
+      "cart",
+      JSON.stringify({
+        carts: [],
+      })
+    );
+};
+
+export const changeQuantityItemInLocal = (id, mode) => {
+  const items = getFromLocal("cart");
+
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
+    if (item.version.id === id) {
+      if (mode === "minus") {
+        item.version.currentQuantity--;
+        if (item.version.currentQuantity === 0) {
+          toast.error("Số lượng sản phẩm đã đạt tối thiểu");
+          return;
+        }
+      } else {
+        item.version.currentQuantity++;
+        if (item.version.currentQuantity > item.version.quantity) {
+          toast.error("Số lượng sản phẩm đã đạt tối đa");
+          return;
+        }
+      }
+    }
+  }
+
+  typeof window !== "undefined" &&
+    localStorage.setItem(
+      "cart",
+      JSON.stringify({
+        carts: items,
       })
     );
 };

@@ -15,9 +15,16 @@ import {
   AiOutlineMinus,
 } from "react-icons/ai";
 import { BASE_URL } from "constants/config";
-import { deleteItemInLocal } from "common/local-storage";
+import {
+  changeQuantityItemInLocal,
+  deleteItemInLocal,
+} from "common/local-storage";
 
-export default function ItemCart({ product, setIsDelete, isDelete }) {
+export default function ItemCart({ product, setIsDelete, isDelete, isView }) {
+  const handleChangeQuantity = (id, mode) => {
+    changeQuantityItemInLocal(id, mode);
+    setIsDelete(!isDelete);
+  };
   return (
     <Card className="border-radius-10 mt-3 mb-3">
       <CardBody className="pt-0 pb-0">
@@ -61,26 +68,47 @@ export default function ItemCart({ product, setIsDelete, isDelete }) {
             <div className="d-flex align-items-center">
               <b style={{ width: 100 }}>Số lượng: </b>
 
-              <InputGroup style={{ width: 120 }}>
-                <InputGroupText className="bg-white cursor-pointer">
-                  <AiOutlineMinus />
-                </InputGroupText>
-                <Input value={product.version.currentQuantity} />
-                <InputGroupText className="bg-white cursor-pointer">
-                  <AiOutlinePlus />
-                </InputGroupText>
-              </InputGroup>
+              {!isView ? (
+                <InputGroup style={{ width: 120 }}>
+                  <InputGroupText
+                    className="bg-white cursor-pointer"
+                    onClick={() =>
+                      handleChangeQuantity(product.version.id, "minus")
+                    }
+                  >
+                    <AiOutlineMinus />
+                  </InputGroupText>
+                  <Input
+                    value={product.version.currentQuantity}
+                    className="p-1"
+                  />
+                  <InputGroupText
+                    className="bg-white cursor-pointer"
+                    onClick={() =>
+                      handleChangeQuantity(product.version.id, "plus")
+                    }
+                  >
+                    <AiOutlinePlus />
+                  </InputGroupText>
+                </InputGroup>
+              ) : (
+                product.version.currentQuantity
+              )}
             </div>
           </div>
-          <div
-            className="cursor-pointer"
-            onClick={() => {
-              deleteItemInLocal(product.version.id);
-              setIsDelete(!isDelete);
-            }}
-          >
-            <AiOutlineMinusCircle />
-          </div>
+          {!isView ? (
+            <div
+              className="cursor-pointer"
+              onClick={() => {
+                deleteItemInLocal(product.version.id);
+                setIsDelete(!isDelete);
+              }}
+            >
+              <AiOutlineMinusCircle />
+            </div>
+          ) : (
+            ""
+          )}
         </div>
       </CardBody>
     </Card>

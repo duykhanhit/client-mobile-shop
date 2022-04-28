@@ -1,4 +1,5 @@
 import { getProfile, login } from "@redux/actions/auth.action";
+import { BASE_URL } from "constants/config";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -16,18 +17,17 @@ import {
   ModalBody,
   Modal,
   ModalFooter,
+  FormFeedback,
 } from "reactstrap";
 
-export default function InfoCart() {
+export default function InfoCart({ information, setInformation }) {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [coupon, setCoupon] = useState("");
+  const [status, setStatus] = useState(null);
   const dispatch = useDispatch();
   const state = useSelector((state) => state.auth);
-  const [txtName, setTxtName] = useState();
-  const [txtPhone, setTxtPhone] = useState();
-  const [txtLocation, setTxtLocation] = useState();
-  const [txtCoupon, setTxtCoupon] = useState();
 
   const handleSubmit = () => {
     dispatch(
@@ -47,11 +47,36 @@ export default function InfoCart() {
         dispatch(getProfile());
       }
       setIsOpenModal(false);
-      setTxtName(state.user?.fullname);
-      setTxtPhone(state.user?.phone);
-      // setTxtLocation(state.user?.phone);
+      setInformation({
+        ...information,
+        phone: state.user?.phone,
+        fullname: state.user?.fullname,
+      });
     }
   }, [state]);
+
+  const checkCoupon = async () => {
+    const response = await fetch(`${BASE_URL}/api/coupon/check`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        code: coupon,
+      }),
+    });
+    const data = await response.json();
+    if (data.statusCode === 200) {
+      setStatus(data.data.status);
+      setInformation({
+        ...information,
+        coupon: data.data.id,
+        value: data.data.value,
+      });
+    } else {
+      setStatus(false);
+    }
+  };
 
   return (
     <Card className="border-radius-10 mt-3 mb-3">
@@ -63,12 +88,22 @@ export default function InfoCart() {
                 <Label for="exampleEmail">Họ và tên</Label>
                 <Input
                   id="exampleEmail"
-                  name="email"
+                  name="name"
                   placeholder="Nhập họ tên (bắt buộc)"
-                  type="email"
-                  value={txtName}
-                  onChange={(e) => setTxtName(e.target.value)}
+                  type="text"
+                  value={information.fullname}
+                  onChange={(e) =>
+                    setInformation({
+                      ...information,
+                      fullname: e.target.value,
+                    })
+                  }
+                  invalid={
+                    information.fullname?.trim()?.length === 0 ? true : false
+                  }
+                  disabled={state.user ? true : false}
                 />
+                <FormFeedback>Vui lòng nhập họ tên</FormFeedback>
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -76,12 +111,22 @@ export default function InfoCart() {
                 <Label for="examplePassword">Số điện thoại</Label>
                 <Input
                   id="examplePassword"
-                  name="password"
+                  name="phone"
                   placeholder="Nhập số điện thoại (bắt buộc)"
                   type="text"
-                  value={txtPhone}
-                  onChange={(e) => setTxtPhone(e.target.value)}
+                  value={information.phone}
+                  onChange={(e) =>
+                    setInformation({
+                      ...information,
+                      phone: e.target.value,
+                    })
+                  }
+                  invalid={
+                    information.phone?.trim()?.length === 0 ? true : false
+                  }
+                  disabled={state.user ? true : false}
                 />
+                <FormFeedback>Vui lòng nhập số điện thoại</FormFeedback>
               </FormGroup>
             </Col>
           </Row>
@@ -91,21 +136,55 @@ export default function InfoCart() {
               id="exampleAddress"
               name="address"
               placeholder="Bát Trang, An Lão, Hải Phòng"
-              value={txtLocation}
-              onChange={(e) => setTxtLocation(e.target.value)}
+              value={information.location}
+              onChange={(e) =>
+                setInformation({
+                  ...information,
+                  location: e.target.value,
+                })
+              }
+              invalid={
+                information.location?.trim()?.length === 0 ? true : false
+              }
             />
+            <FormFeedback>Vui lòng nhập địa chỉ</FormFeedback>
           </FormGroup>
           <Row>
             <Label for="coupon">Mã giảm giá</Label>
             <Col xs={6}>
               <FormGroup>
-                <Input
-                  id="coupon"
-                  name="city"
-                  placeholder="Nhập mã giảm giá"
-                  value={txtCoupon}
-                  onChange={(e) => setTxtCoupon(e.target.value)}
-                />
+                {status === true ? (
+                  <Input
+                    id="coupon"
+                    name="coupon"
+                    placeholder="Nhập mã giảm giá"
+                    value={coupon}
+                    onChange={(e) => setCoupon(e.target.value)}
+                    valid={status}
+                    // invalid={status}
+                  />
+                ) : status === false ? (
+                  <Input
+                    id="coupon"
+                    name="coupon"
+                    placeholder="Nhập mã giảm giá"
+                    value={coupon}
+                    onChange={(e) => setCoupon(e.target.value)}
+                    invalid={!status}
+                  />
+                ) : (
+                  <Input
+                    id="coupon"
+                    name="coupon"
+                    placeholder="Nhập mã giảm giá"
+                    value={coupon}
+                    onChange={(e) => setCoupon(e.target.value)}
+                  />
+                )}
+
+                <FormFeedback>
+                  {status ? "Sử dụng thành công!" : "Mã giảm giá không hợp lệ"}
+                </FormFeedback>
               </FormGroup>
             </Col>
             <Col xs={2}>
@@ -113,8 +192,9 @@ export default function InfoCart() {
                 style={{
                   width: 100,
                 }}
+                onClick={checkCoupon}
               >
-                Sử Dụng
+                Sử dụng
               </Button>
             </Col>
           </Row>

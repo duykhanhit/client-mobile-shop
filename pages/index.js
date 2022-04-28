@@ -21,7 +21,6 @@ export async function getServerSideProps() {
   // Fetch data from external API
   const res = await fetch(`${BASE_URL}/api/product`);
   const data = await res.json();
-  console.log("data", data.data.items[0]);
   const settingRes = await fetch(`${BASE_URL}/api/setting`);
   const dataSetting = await settingRes.json();
   const categories = await fetch(`${BASE_URL}/api/category`);

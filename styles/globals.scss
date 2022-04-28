@@ -155,3 +155,35 @@ body {
   padding: 5px 10px;
   width: 150px;
 }
+
+.cart-action-group .product-action {
+  display: flex;
+}
+
+.product-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  display: none;
+}
+
+.cart-action-group .product-action input {
+  width: 45px;
+  height: 30px;
+  font-size: 14px;
+  border-radius: 5px;
+  color: var(--primary);
+  background: var(--chalk);
+}
+
+.product-action input {
+  width: 100%;
+  font-size: 15px;
+  margin: 0px 5px;
+  padding: 6px 0px;
+  border-radius: 6px;
+  text-align: center;
+  color: var(--white);
+  background: var(--primary);
+  text-shadow: var(--primary-tshadow);
+}

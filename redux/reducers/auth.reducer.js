@@ -1,9 +1,9 @@
 import * as types from "../constants";
 
 const initialState = {
-  token: typeof window !== "undefined" && localStorage.getItem("token"),
+  token: typeof window !== "undefined" ? localStorage.getItem("token") : null,
   refreshToken:
-    typeof window !== "undefined" && localStorage.getItem("refreshToken"),
+    typeof window !== "undefined" ? localStorage.getItem("refreshToken") : null,
   user: null,
 };
 

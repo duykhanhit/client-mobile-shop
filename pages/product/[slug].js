@@ -38,11 +38,14 @@ import { BASE_URL } from "constants/config";
 import { formatMoney, handleRate } from "common/common";
 import parse from "html-react-parser";
 import { isEmpty } from "lodash";
+import { addToLocal } from "common/local-storage";
+import { toast } from "react-toastify";
+import { useRouter } from "next/router";
 
 export default function Product({ data, dataCategory }) {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState();
-  console.log("selectedItem", selectedItem);
+  const router = useRouter();
 
   const handleCalCulateReview = () => {
     const reviewMap = new Map();
@@ -68,6 +71,23 @@ export default function Product({ data, dataCategory }) {
       });
     });
     return reviews;
+  };
+
+  // const handleAddToCart = () => {
+  //   if (!isEmpty(selectedItem)) {
+  //     addToLocal("cart", selectedItem);
+  //   } else {
+  //     toast.error("Bạn chưa chọn phiên bản");
+  //   }
+  // };
+
+  const handleBuy = () => {
+    if (!isEmpty(selectedItem)) {
+      addToLocal("cart", selectedItem);
+      router.push("/cart");
+    } else {
+      toast.error("Bạn chưa chọn phiên bản");
+    }
   };
 
   return (
@@ -133,8 +153,10 @@ export default function Product({ data, dataCategory }) {
                 <Col className="mb-2">
                   <Button
                     key={e}
-                    color={selectedItem === e ? "danger" : "primary"}
-                    onClick={() => setSelectedItem(e)}
+                    color={selectedItem?.version === e ? "danger" : "primary"}
+                    onClick={() =>
+                      setSelectedItem({ version: e, product: data })
+                    }
                     outline
                     style={{ width: "100%" }}
                   >
@@ -148,6 +170,7 @@ export default function Product({ data, dataCategory }) {
             <div className="row row-cols-1 row-cols-md-1 row-cols-lg-1 row-cols-xl-1">
               <Col className="mt-2">
                 <Button
+                  onClick={handleBuy}
                   className="border-radius-10"
                   color="danger"
                   style={{ width: "100%" }}
@@ -155,15 +178,16 @@ export default function Product({ data, dataCategory }) {
                   Mua ngay
                 </Button>
               </Col>
-              <Col className="mt-2">
+              {/* <Col className="mt-2">
                 <Button
+                  onClick={handleAddToCart}
                   className="border-radius-10"
                   color="primary"
                   style={{ width: "100%", color: "white" }}
                 >
                   Thêm vào giỏ
                 </Button>
-              </Col>
+              </Col> */}
             </div>
             <ListGroup className="mt-3 mb-3">
               <ListGroupItem

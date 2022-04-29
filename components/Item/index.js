@@ -28,9 +28,7 @@ export default function Item({ item }) {
             }}
           >
             {" "}
-            {formatMoney(
-              item.productVersions[0].salePrice || item.productVersions[0].price
-            )}
+            {formatMoney(item.salePrice || item.price)}
           </span>
         </p>
         <p>

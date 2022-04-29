@@ -2,13 +2,11 @@ import Item from "@components/Item";
 import MainLayout from "@components/MainLayout";
 import { BASE_URL } from "constants/config";
 import { useRouter } from "next/router";
-import React from "react";
-import { Badge, Button, Col, Input, Label, Row } from "reactstrap";
+import React, { useEffect, useState } from "react";
+import { Button, Col, Input, Label, Row, Spinner } from "reactstrap";
 import { stringify } from "query-string";
-import {
-  PRICE_FILTER_TITLE,
-  SCREEN_FILTER_TITLE,
-} from "constants/filter.constant";
+import { PRICE_FILTER_TITLE } from "constants/filter.constant";
+import { toast } from "react-toastify";
 
 export default function Category({
   data,
@@ -18,7 +16,15 @@ export default function Category({
   dataCategories,
 }) {
   const router = useRouter();
+  const [products, setProducts] = useState(data.items);
+  const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingLoadMore, setIsLoadingLoadMore] = useState(false);
 
+  useEffect(() => {
+    setIsLoading(false);
+    setProducts(data.items);
+  }, [data.items]);
   const refreshData = () => {
     const { slug } = router.query;
     delete router.query.slug;
@@ -28,6 +34,7 @@ export default function Category({
   };
 
   const handleSelectBranch = (e) => {
+    setIsLoading(true);
     const { value } = e.target;
     if (+value !== 0) {
       router.query.branchId = value;
@@ -40,6 +47,7 @@ export default function Category({
   };
 
   const handleSelectStorage = (e) => {
+    setIsLoading(true);
     const { value } = e.target;
     if (+value !== 0) {
       router.query.storageId = value;
@@ -52,6 +60,7 @@ export default function Category({
   };
 
   const handleSelectPrice = (e) => {
+    setIsLoading(true);
     const { value } = e.target;
     if (+value !== 0) {
       router.query.price = value;
@@ -63,19 +72,68 @@ export default function Category({
     refreshData();
   };
 
-  // const handleSelectScreen = (e) => {
-  //   const { value } = e.target;
-  //   if (+value !== 0) {
-  //     router.query.screen = value;
-  //     router.push(router, undefined, { shallow: true });
-  //   } else {
-  //     delete router.query.screen;
-  //     router.push(router, undefined, { shallow: true });
-  //   }
-  // };
+  const handleLoadMore = async () => {
+    setIsLoadingLoadMore(true);
+    const newResponse = await fetch(
+      `${BASE_URL}/api/product?${stringify({
+        ...router.query,
+        page: page + 1,
+      })}`
+    );
+    const newProducts = await newResponse.json();
+    if (!newProducts.data.items.length) {
+      toast.error("Đã tải hết sản phẩm");
+      setIsLoadingLoadMore(false);
+      return;
+    }
+
+    setIsLoadingLoadMore(false);
+    setProducts([...products, ...newProducts.data.items]);
+    setPage(page + 1);
+  };
+
+  const handleOrder = async (mode) => {
+    setIsLoading(true);
+    switch (mode) {
+      case "priceASC":
+        router.query.orderPrice = 1;
+        break;
+      case "priceDESC":
+        router.query.orderPrice = -1;
+        break;
+      case "view":
+        router.query.orderView = -1;
+        break;
+      case "clear":
+        delete router.query.orderView;
+        delete router.query.orderPrice;
+        break;
+
+      default:
+        break;
+    }
+
+    const newResponse = await fetch(
+      `${BASE_URL}/api/product?${stringify({
+        ...router.query,
+      })}`
+    );
+    const newProducts = await newResponse.json();
+
+    setIsLoading(false);
+    setProducts(newProducts.data.items);
+    setPage(1);
+  };
 
   return (
     <MainLayout title={dataCategory.name} dataCategory={dataCategories}>
+      {isLoading ? (
+        <Row className="d-flex justify-content-center">
+          <Spinner>Loading...</Spinner>
+        </Row>
+      ) : (
+        ""
+      )}
       <Row>
         <h5>Bộ lọc</h5>
       </Row>
@@ -162,6 +220,7 @@ export default function Category({
             }}
             color="primary"
             outline
+            onClick={() => handleOrder("priceASC")}
           >
             Giá tăng dần
           </Button>
@@ -172,6 +231,7 @@ export default function Category({
             }}
             color="primary"
             outline
+            onClick={() => handleOrder("priceDESC")}
           >
             Giá giảm dần
           </Button>
@@ -182,19 +242,39 @@ export default function Category({
             }}
             color="primary"
             outline
+            onClick={() => handleOrder("view")}
           >
             Xem nhiều
           </Button>
+          <Button
+            style={{
+              marginRight: 10,
+              fontSize: 14,
+            }}
+            color="primary"
+            outline
+            onClick={() => handleOrder("clear")}
+          >
+            X
+          </Button>
         </Col>
       </div>
-      <h5>Danh sách</h5>
+      <h5 className="text-uppercase">Danh sách {dataCategory.name}</h5>
 
-      {data?.items?.length ? (
-        <div className="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 mt-2">
-          {data?.items?.map((item, index) => (
-            <Item key={index} item={item} />
-          ))}
-        </div>
+      {products?.length ? (
+        <>
+          <div className="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 mt-2">
+            {products?.map((item, index) => (
+              <Item key={index} item={item} />
+            ))}
+          </div>
+          <div className="text-center mt-2">
+            <Button onClick={handleLoadMore}>
+              Xem thêm{" "}
+              {isLoadingLoadMore ? <Spinner size="sm">Loading...</Spinner> : ""}
+            </Button>
+          </div>
+        </>
       ) : (
         <h2 className="text-center">Không có sản phẩm nào</h2>
       )}
@@ -213,7 +293,6 @@ export async function getServerSideProps(context) {
   const dataBranch = await resBranch.json();
   const resStorage = await fetch(`${BASE_URL}/api/storage`);
   const dataStorage = await resStorage.json();
-
   const category = await fetch(
     `${BASE_URL}/api/category/${context.params.slug}`
   );
@@ -227,7 +306,6 @@ export async function getServerSideProps(context) {
       notFound: true,
     };
   }
-
   // Pass data to the page via props
   return {
     props: {

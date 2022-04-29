@@ -198,12 +198,7 @@ export default function Product({ data, dataCategory }) {
           </Col>
           <Col className="col-xl-4">
             <Badge color="danger">
-              Giảm giá{" "}
-              {((data.productVersions[0].price -
-                data.productVersions[0].salePrice) /
-                data.productVersions[0].price) *
-                100}
-              %
+              Giảm giá {((data.price - data.salePrice) / data.price) * 100}%
             </Badge>
             <p className="pt-3">
               <span
@@ -211,10 +206,10 @@ export default function Product({ data, dataCategory }) {
                   color: "red",
                 }}
               >
-                {formatMoney(data.productVersions[0].salePrice)}
+                {formatMoney(data.salePrice)}
               </span>
               &nbsp;&nbsp;
-              <del>{formatMoney(data.productVersions[0].price)}</del>
+              <del>{formatMoney(data.price)}</del>
             </p>
             <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-3">
               {data.productVersions.map((e) => (
@@ -222,9 +217,11 @@ export default function Product({ data, dataCategory }) {
                   <Button
                     key={e}
                     color={selectedItem?.version === e ? "danger" : "primary"}
-                    onClick={() =>
-                      setSelectedItem({ version: e, product: data })
-                    }
+                    onClick={() => {
+                      setSelectedItem({ version: e, product: data });
+                      data.salePrice = e.salePrice;
+                      data.price = e.price;
+                    }}
                     outline
                     style={{ width: "100%" }}
                   >

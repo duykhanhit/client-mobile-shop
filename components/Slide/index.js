@@ -2,9 +2,7 @@ import React from "react";
 import { Col, Container, Row, UncontrolledCarousel } from "reactstrap";
 import Image from "next/image";
 import Link from "next/link";
-import { AiOutlineMobile } from "react-icons/ai";
-import { MdKeyboardArrowRight } from "react-icons/md";
-import { BsLaptop, BsTablet } from "react-icons/bs";
+import { MdOutlineNavigateNext } from "react-icons/md";
 
 export default function Slide({ dataCategory }) {
   return (
@@ -14,7 +12,7 @@ export default function Slide({ dataCategory }) {
           <div className="hdk-menu">
             {dataCategory.items.map((e) => (
               <div className="hdk-menu-item" key={e.id}>
-                <AiOutlineMobile />
+                <MdOutlineNavigateNext />
                 <Link href={`/category/${e.id}`}>
                   <a className="text-decoration-none link-dark">{e.name}</a>
                 </Link>
@@ -92,14 +90,10 @@ export default function Slide({ dataCategory }) {
           <UncontrolledCarousel
             items={[
               {
-                altText: "Slide 2",
-                caption: "Slide 2",
                 key: 2,
                 src: "https://cdn.cellphones.com.vn/media/ltsoft/promotion/mI_12.png",
               },
               {
-                altText: "Slide 3",
-                caption: "Slide 3",
                 key: 3,
                 src: "https://cdn.cellphones.com.vn/media/ltsoft/promotion/reno7.png",
               },

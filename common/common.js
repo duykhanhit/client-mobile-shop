@@ -4,7 +4,7 @@ export const formatTime = (time) => moment(time).format("DD/MM/YYYY HH:mm");
 
 export const formatMoney = (input = 0) =>
   input
-    .toLocaleString("it-IT", {
+    ?.toLocaleString("it-IT", {
       style: "currency",
       currency: "VND",
     })

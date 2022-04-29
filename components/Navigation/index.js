@@ -6,7 +6,7 @@ import { BiUserCircle } from "react-icons/bi";
 import { FaShippingFast } from "react-icons/fa";
 import { GoLocation } from "react-icons/go";
 import { VscCallIncoming } from "react-icons/vsc";
-import InputCuscom from "@components/InputCustom";
+import InputCustom from "@components/InputCustom";
 import NavigationItem from "@components/NavigationItem";
 
 export default function Navigation({ dataCategory }) {
@@ -47,7 +47,7 @@ export default function Navigation({ dataCategory }) {
                 }}
               >
                 <li className="nav-item">
-                  <InputCuscom />
+                  <InputCustom />
                 </li>
                 <li className="nav-item">
                   <NavigationItem

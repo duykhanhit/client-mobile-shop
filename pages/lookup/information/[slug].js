@@ -17,6 +17,7 @@ import { getFromLocal } from "common/local-storage";
 import { useDispatch, useSelector } from "react-redux";
 import { detailOrder } from "@redux/actions/order.action";
 import Link from "next/link";
+import { OrderStatus } from "constants/filter.constant";
 
 export default function DetailInformation({ id, dataCategory }) {
   const dispatch = useDispatch();
@@ -45,6 +46,10 @@ export default function DetailInformation({ id, dataCategory }) {
                   <Col md={12}>Họ tên: {state.order?.item?.user?.fullname}</Col>
                   <Col md={12}>Số điện thoại: {state.order?.item?.phone}</Col>
                   <Col md={12}>Địa chỉ: {state.order?.item?.address}</Col>
+                  <Col md={12}>
+                    Trạng thái đơn hàng:{" "}
+                    {OrderStatus[state.order?.item?.status]}
+                  </Col>
                 </Row>
               </CardBody>
             </Card>

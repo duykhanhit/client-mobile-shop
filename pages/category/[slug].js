@@ -87,7 +87,7 @@ export default function Category({
             name="select"
             type="select"
             onChange={handleSelectBranch}
-            value={router.query.branchId}
+            value={router.query.branchId || 0}
           >
             <option value={0} key={0}>
               Tất cả
@@ -106,7 +106,7 @@ export default function Category({
             name="select"
             type="select"
             onChange={handleSelectPrice}
-            value={router.query.price}
+            value={router.query.price || 0}
           >
             {PRICE_FILTER_TITLE.map((e, i) => (
               <option value={i} key={i}>
@@ -122,7 +122,7 @@ export default function Category({
             name="select"
             type="select"
             onChange={handleSelectStorage}
-            value={router.query.storageId}
+            value={router.query.storageId || 0}
           >
             <option value={0} key={0}>
               Tất cả

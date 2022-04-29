@@ -37,3 +37,5 @@ export const OrderStatus = [
   "Hoàn thành",
   "Đã huỷ",
 ];
+
+export const ReviewEnum = ["Rất tệ", "Tệ", "Bình thường", "Tốt", "Rất tốt"];

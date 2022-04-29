@@ -1,4 +1,4 @@
-import { getProfile, login } from "@redux/actions/auth.action";
+import { getProfile, login, sendOTPToLogin } from "@redux/actions/auth.action";
 import { BASE_URL } from "constants/config";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,14 +18,16 @@ import {
   Modal,
   ModalFooter,
   FormFeedback,
+  InputGroup,
 } from "reactstrap";
 
-export default function InfoCart({ information, setInformation }) {
+export default function InfoCart({ information, setInformation, isClick }) {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [coupon, setCoupon] = useState("");
   const [status, setStatus] = useState(null);
+  const [isSend, setIsSend] = useState(false);
   const dispatch = useDispatch();
   const state = useSelector((state) => state.auth);
 
@@ -34,7 +36,7 @@ export default function InfoCart({ information, setInformation }) {
       login(
         {
           phone: phone,
-          password: password,
+          otp: password,
         },
         () => dispatch(getProfile())
       )
@@ -99,7 +101,11 @@ export default function InfoCart({ information, setInformation }) {
                     })
                   }
                   invalid={
-                    information.fullname?.trim()?.length === 0 ? true : false
+                    isClick
+                      ? information.fullname?.trim()?.length === 0
+                        ? true
+                        : false
+                      : false
                   }
                   disabled={state.user ? true : false}
                 />
@@ -122,7 +128,11 @@ export default function InfoCart({ information, setInformation }) {
                     })
                   }
                   invalid={
-                    information.phone?.trim()?.length === 0 ? true : false
+                    isClick
+                      ? information.phone?.trim()?.length === 0
+                        ? true
+                        : false
+                      : false
                   }
                   disabled={state.user ? true : false}
                 />
@@ -144,7 +154,11 @@ export default function InfoCart({ information, setInformation }) {
                 })
               }
               invalid={
-                information.location?.trim()?.length === 0 ? true : false
+                isClick
+                  ? information.location?.trim()?.length === 0
+                    ? true
+                    : false
+                  : false
               }
             />
             <FormFeedback>Vui lòng nhập địa chỉ</FormFeedback>
@@ -229,15 +243,33 @@ export default function InfoCart({ information, setInformation }) {
               <Row form>
                 <Col md={12}>
                   <FormGroup>
-                    <Input
-                      className="border-radius-10"
-                      id="exampleEmail"
-                      name="email"
-                      placeholder="Số điện thoại"
-                      type="text"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                    />
+                    <InputGroup>
+                      <Input
+                        className="border-radius-10"
+                        id="exampleEmail"
+                        name="email"
+                        placeholder="Số điện thoại"
+                        type="text"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        valid={isSend}
+                      />
+                      <Button
+                        onClick={() =>
+                          dispatch(
+                            sendOTPToLogin(
+                              {
+                                phone,
+                              },
+                              () => setIsSend(true)
+                            )
+                          )
+                        }
+                      >
+                        Lấy mã OTP
+                      </Button>
+                      {/* <FormFeedback>hehe</FormFeedback> */}
+                    </InputGroup>
                   </FormGroup>
                 </Col>
                 <Col md={12}>
@@ -246,25 +278,16 @@ export default function InfoCart({ information, setInformation }) {
                       className="border-radius-10"
                       id="examplePassword"
                       name="password"
-                      placeholder="Mật khẩu"
-                      type="password"
+                      placeholder="Nhập mã OTP gồm 4 ký tự"
+                      type="number"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                     />
                   </FormGroup>
                 </Col>
                 <Col md={12}>
-                  <Alert color="primary">
-                    Nếu bạn quên mật khẩu, hãy&nbsp;
-                    <b
-                      className="cursor-pointer"
-                      onClick={function noRefCheck() {
-                        setIsOpenModal(!isOpenModal);
-                      }}
-                    >
-                      nhấn vào đây
-                    </b>
-                    !
+                  <Alert color="danger">
+                    Vui lòng không tiết lộ mã OTP cho bất kỳ ai!
                   </Alert>
                 </Col>
               </Row>

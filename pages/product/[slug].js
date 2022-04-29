@@ -1,5 +1,5 @@
 import MainLayout from "@components/MainLayout";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Col,
   Row,
@@ -24,6 +24,9 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   Badge,
+  FormFeedback,
+  InputGroup,
+  Alert,
 } from "reactstrap";
 import {
   AiFillStar,
@@ -41,11 +44,43 @@ import { isEmpty } from "lodash";
 import { addToLocal } from "common/local-storage";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
+import { useDispatch, useSelector } from "react-redux";
+import { getProfile, login, sendOTPToLogin } from "@redux/actions/auth.action";
+import { ReviewEnum } from "constants/filter.constant";
+import { createReview } from "@redux/actions/review.action";
 
 export default function Product({ data, dataCategory }) {
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const [isOpenModalLogin, setIsOpenModalLogin] = useState(false);
   const [selectedItem, setSelectedItem] = useState();
+  const [content, setContent] = useState("");
+  const [isContent, setIsContent] = useState(false);
+  const [rate, setRate] = useState(-1);
+  const [phone, setPhone] = useState();
+  const [otp, setOtp] = useState();
+  const [isSend, setIsSend] = useState(false);
+  const dispatch = useDispatch();
+  const state = useSelector((state) => state);
   const router = useRouter();
+
+  useEffect(() => {
+    dispatch(getProfile());
+  }, [dispatch]);
+
+  const handleSubmit = () => {
+    dispatch(
+      login(
+        {
+          phone,
+          otp,
+        },
+        () => {
+          dispatch(getProfile());
+          setIsOpenModalLogin(false);
+        }
+      )
+    );
+  };
 
   const handleCalCulateReview = () => {
     const reviewMap = new Map();
@@ -88,6 +123,32 @@ export default function Product({ data, dataCategory }) {
     } else {
       toast.error("Bạn chưa chọn phiên bản");
     }
+  };
+
+  const handleReview = () => {
+    if (content.trim().length === 0) {
+      setIsContent(true);
+      return;
+    }
+
+    if (rate === -1) {
+      toast.error("Vui lòng chọn đánh giá sao");
+      return;
+    }
+
+    dispatch(
+      createReview(
+        {
+          productId: data.id,
+          content,
+          rate: rate + 1,
+        },
+        () => {
+          setIsOpenModal(false);
+          router.replace(router.asPath);
+        }
+      )
+    );
   };
 
   return (
@@ -288,14 +349,26 @@ export default function Product({ data, dataCategory }) {
                 </CardText>
                 <CardText>
                   <div className="text-center">
-                    <Button
-                      color="danger"
-                      onClick={function noRefCheck() {
-                        setIsOpenModal(!isOpenModal);
-                      }}
-                    >
-                      Đánh giá ngay
-                    </Button>
+                    {!isEmpty(state.auth?.user) ? (
+                      <Button
+                        color="danger"
+                        onClick={function noRefCheck() {
+                          setIsOpenModal(!isOpenModal);
+                        }}
+                      >
+                        Đánh giá ngay
+                      </Button>
+                    ) : (
+                      <Button
+                        color="danger"
+                        onClick={function noRefCheck() {
+                          setIsOpenModalLogin(!isOpenModal);
+                        }}
+                      >
+                        Đăng nhập để đánh giá
+                      </Button>
+                    )}
+
                     <Modal
                       isOpen={isOpenModal}
                       toggle={function noRefCheck() {}}
@@ -317,7 +390,9 @@ export default function Product({ data, dataCategory }) {
                                   id="exampleEmail"
                                   name="email"
                                   placeholder="Họ và tên"
-                                  type="email"
+                                  type="text"
+                                  value={state.auth?.user?.fullname}
+                                  disabled
                                 />
                               </FormGroup>
                             </Col>
@@ -329,6 +404,8 @@ export default function Product({ data, dataCategory }) {
                                   name="password"
                                   placeholder="Số điện thoại"
                                   type="text"
+                                  value={state.auth?.user?.phone}
+                                  disabled
                                 />
                               </FormGroup>
                             </Col>
@@ -340,7 +417,16 @@ export default function Product({ data, dataCategory }) {
                                   name="password"
                                   placeholder="Nội dung"
                                   type="text"
+                                  value={content}
+                                  onChange={(e) => {
+                                    setContent(e.target.value);
+                                    setIsContent(false);
+                                  }}
+                                  invalid={isContent}
                                 />
+                                <FormFeedback>
+                                  Vui lòng nhập nội dung
+                                </FormFeedback>
                               </FormGroup>
                             </Col>
                             <Col md={12}>
@@ -351,36 +437,26 @@ export default function Product({ data, dataCategory }) {
                                   justifyContent: "space-around",
                                 }}
                               >
-                                <div className="text-center cursor-pointer">
-                                  <AiFillStar /> <br />
-                                  Rất tệ
-                                </div>
-                                <div className="text-center cursor-pointer">
-                                  <AiFillStar /> <br />
-                                  Tệ
-                                </div>
-                                <div className="text-center cursor-pointer">
-                                  <AiFillStar /> <br />
-                                  Bình thường
-                                </div>
-                                <div className="text-center cursor-pointer">
-                                  <AiFillStar /> <br />
-                                  Tốt
-                                </div>
-                                <div className="text-center cursor-pointer">
-                                  <AiFillStar /> <br />
-                                  Rất tốt
-                                </div>
+                                {ReviewEnum.map((e, i) => (
+                                  <div
+                                    className="text-center cursor-pointer"
+                                    key={i}
+                                    onClick={() => setRate(i)}
+                                  >
+                                    <AiFillStar
+                                      color={i <= rate ? "yellow" : ""}
+                                    />{" "}
+                                    <br />
+                                    {e}
+                                  </div>
+                                ))}
                               </div>
                             </Col>
                           </Row>
                         </Form>
                       </ModalBody>
                       <ModalFooter>
-                        <Button
-                          color="danger"
-                          onClick={function noRefCheck() {}}
-                        >
+                        <Button color="danger" onClick={handleReview}>
                           Gửi đánh giá
                         </Button>{" "}
                         <Button
@@ -394,6 +470,85 @@ export default function Product({ data, dataCategory }) {
                     </Modal>
                   </div>
                 </CardText>
+                <Modal
+                  isOpen={isOpenModalLogin}
+                  toggle={function noRefCheck() {}}
+                >
+                  <ModalHeader
+                    toggle={function noRefCheck() {
+                      setIsOpenModalLogin(!isOpenModal);
+                    }}
+                  >
+                    Đăng nhập
+                  </ModalHeader>
+                  <ModalBody>
+                    <Form>
+                      <Row form>
+                        <Col md={12}>
+                          <FormGroup>
+                            <InputGroup>
+                              <Input
+                                className="border-radius-10"
+                                id="exampleEmail"
+                                name="email"
+                                placeholder="Số điện thoại"
+                                type="text"
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
+                                valid={isSend}
+                              />
+                              <Button
+                                onClick={() =>
+                                  dispatch(
+                                    sendOTPToLogin(
+                                      {
+                                        phone,
+                                      },
+                                      () => setIsSend(true)
+                                    )
+                                  )
+                                }
+                              >
+                                Lấy mã OTP
+                              </Button>
+                              {/* <FormFeedback>hehe</FormFeedback> */}
+                            </InputGroup>
+                          </FormGroup>
+                        </Col>
+                        <Col md={12}>
+                          <FormGroup>
+                            <Input
+                              className="border-radius-10"
+                              id="examplePassword"
+                              name="password"
+                              placeholder="Nhập mã OTP gồm 4 ký tự"
+                              type="number"
+                              value={otp}
+                              onChange={(e) => setOtp(e.target.value)}
+                            />
+                          </FormGroup>
+                        </Col>
+                        <Col md={12}>
+                          <Alert color="danger">
+                            Vui lòng không tiết lộ mã OTP cho bất kỳ ai!
+                          </Alert>
+                        </Col>
+                      </Row>
+                    </Form>
+                  </ModalBody>
+                  <ModalFooter>
+                    <Button color="danger" type="submit" onClick={handleSubmit}>
+                      Đăng nhập
+                    </Button>{" "}
+                    <Button
+                      onClick={function noRefCheck() {
+                        setIsOpenModalLogin(false);
+                      }}
+                    >
+                      Huỷ
+                    </Button>
+                  </ModalFooter>
+                </Modal>
                 <CardText>
                   {data.reviews.map((e, i) => (
                     <Comment key={i} data={e} />

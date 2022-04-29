@@ -32,6 +32,7 @@ export default function Cart({ dataCategory }) {
     isLocation: false,
     value: 0,
   });
+  const [isClick, setIsClick] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -69,6 +70,7 @@ export default function Cart({ dataCategory }) {
         ...information,
         ...isFail,
       });
+      setIsClick(true);
       toast.error("Vui lòng nhập đủ thông tin");
       return;
     }
@@ -133,6 +135,7 @@ export default function Cart({ dataCategory }) {
               <InfoCart
                 setInformation={setInformation}
                 information={information}
+                isClick={isClick}
               />
             ) : (
               <>

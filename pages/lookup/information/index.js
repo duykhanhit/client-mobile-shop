@@ -1,5 +1,5 @@
 import MainLayout from "@components/MainLayout";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Col,
   Container,
@@ -12,9 +12,29 @@ import {
   Table,
 } from "reactstrap";
 import { BASE_URL } from "constants/config";
+import { useDispatch, useSelector } from "react-redux";
+import { getProfile } from "@redux/actions/auth.action";
+import { useRouter } from "next/router";
+import { listOrder } from "@redux/actions/order.action";
+import { formatMoney, formatTime } from "common/common";
+import { OrderStatus } from "constants/filter.constant";
+import Link from "next/link";
 
 export default function LookupInformation({ dataCategory }) {
   const [tab, setTab] = useState(1);
+  const dispatch = useDispatch();
+  const state = useSelector((state) => state);
+  const router = useRouter();
+
+  useEffect(() => {
+    dispatch(getProfile());
+
+    if (!state.auth.token) {
+      router.push("/lookup");
+    }
+
+    dispatch(listOrder({ page: 1, isMe: 1 }));
+  }, [dispatch]);
 
   const handleChangeTab = (e) => {
     setTab(e);
@@ -63,27 +83,42 @@ export default function LookupInformation({ dataCategory }) {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <th scope="row">1</th>
-                      <td>Mark</td>
-                      <td>Otto</td>
-                      <td>@mdo</td>
-                      <td>@mdo</td>
-                    </tr>
-                    <tr>
-                      <th scope="row">2</th>
-                      <td>Jacob</td>
-                      <td>Thornton</td>
-                      <td>@fat</td>
-                      <td>@fat</td>
-                    </tr>
-                    <tr>
-                      <th scope="row">3</th>
-                      <td>Larry</td>
-                      <td>the Bird</td>
-                      <td>@twitter</td>
-                      <td>@twitter</td>
-                    </tr>
+                    {state.order?.items?.map((e, i) => (
+                      <tr>
+                        <th scope="row">
+                          <Link href={`/lookup/information/${e.id}`}>
+                            <a className="text-decoration-none link-dark">
+                              #{e.id}
+                            </a>
+                          </Link>
+                        </th>
+                        <td>
+                          {e.orderDetails
+                            .map(
+                              (v) =>
+                                `${v.productName} - ${v.color.name} - ${v.storage.name}`
+                            )
+                            .join(", ")}
+                        </td>
+                        <td>
+                          {formatMoney(
+                            (e.orderDetails?.reduce((total, item) => {
+                              return (
+                                total +
+                                (item?.orderPrice ||
+                                  item?.salePrice ||
+                                  item?.price) *
+                                  item.quantity
+                              );
+                            }, 0) *
+                              (100 - e?.coupon?.value || 0)) /
+                              100
+                          )}
+                        </td>
+                        <td>{formatTime(e.createdAt)}</td>
+                        <td>{OrderStatus[e.status]}</td>
+                      </tr>
+                    ))}
                   </tbody>
                 </Table>
               </>
@@ -93,19 +128,19 @@ export default function LookupInformation({ dataCategory }) {
                   <CardBody>
                     <CardTitle tag="h5">Thông tin cá nhân</CardTitle>
                     <Row>
-                      <Col md={12}>Họ tên: </Col>
-                      <Col md={12}>Số điện thoại: </Col>
+                      <Col md={12}>Họ tên: {state.auth?.user?.fullname} </Col>
+                      <Col md={12}>
+                        Số điện thoại: {state.auth?.user?.phone}
+                      </Col>
                     </Row>
                   </CardBody>
                 </Card>
                 <h5>Danh sách địa chỉ</h5>
 
                 <ListGroup>
-                  <ListGroupItem>Cras justo odio</ListGroupItem>
-                  <ListGroupItem>Dapibus ac facilisis in</ListGroupItem>
-                  <ListGroupItem>Morbi leo risus</ListGroupItem>
-                  <ListGroupItem>Porta ac consectetur ac</ListGroupItem>
-                  <ListGroupItem>Vestibulum at eros</ListGroupItem>
+                  {state.auth?.user?.locations?.map((e) => (
+                    <ListGroupItem>{e.address}</ListGroupItem>
+                  ))}
                 </ListGroup>
               </>
             )}

@@ -27,3 +27,13 @@ export const STEP_ORDER_ENUM = {
   INFORMATION: 1,
   CONFIRM: 2,
 };
+
+export const OrderStatus = [
+  "Trong giỏ hàng",
+  "Chờ xác nhận",
+  "Đã xác nhận",
+  "Đang giao hàng",
+  "Đã nhận",
+  "Hoàn thành",
+  "Đã huỷ",
+];

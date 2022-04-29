@@ -135,7 +135,7 @@ export default function InfoCart({ information, setInformation }) {
             <Input
               id="exampleAddress"
               name="address"
-              placeholder="Bát Trang, An Lão, Hải Phòng"
+              placeholder="Nhập địa chỉ (bắt buộc)"
               value={information.location}
               onChange={(e) =>
                 setInformation({

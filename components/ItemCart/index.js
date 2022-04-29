@@ -33,7 +33,7 @@ export default function ItemCart({ product, setIsDelete, isDelete, isView }) {
             <Image
               alt="demo"
               className="rounded mx-auto d-block pt-3 img-fluid cursor-pointer"
-              src={`${BASE_URL}/${product.product.productImages[0].url}`}
+              src={`${BASE_URL}/${product.product?.productImages[0]?.url}`}
               width="160px"
               height="160px"
             />
@@ -63,7 +63,14 @@ export default function ItemCart({ product, setIsDelete, isDelete, isView }) {
               </span>
               &nbsp;&nbsp;
               <del>{formatMoney(product.version.price)}</del>
-              &nbsp;&nbsp;<Badge color="danger">Trả góp 0%</Badge>
+              &nbsp;&nbsp;
+              <Badge color="danger">
+                Giảm giá{" "}
+                {((product.version.price - product.version.salePrice) /
+                  product.version.price) *
+                  100}
+                %
+              </Badge>
             </p>
             <div className="d-flex align-items-center">
               <b style={{ width: 100 }}>Số lượng: </b>

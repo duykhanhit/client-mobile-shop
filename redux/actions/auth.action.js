@@ -1,5 +1,9 @@
 import { toast } from "react-toastify";
-import { getProfileService, loginService } from "../../service/auth.service";
+import {
+  getProfileService,
+  loginService,
+  sendOTPLogin,
+} from "../../service/auth.service";
 import * as types from "../constants";
 
 export const login = (user, cb) => {
@@ -19,6 +23,21 @@ export const login = (user, cb) => {
         });
         cb();
         toast.success(response.message);
+      }
+    } catch (error) {
+      console.log(error?.message || error);
+      toast.error(error?.message || error);
+    }
+  };
+};
+export const sendOTPToLogin = (data, onSuccess) => {
+  return async (dispatch) => {
+    try {
+      const response = await sendOTPLogin(data);
+      if (response.statusCode !== 200) {
+        toast.error(response.message);
+      } else {
+        onSuccess();
       }
     } catch (error) {
       console.log(error?.message || error);

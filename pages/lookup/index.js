@@ -1,5 +1,5 @@
 import MainLayout from "@components/MainLayout";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Col,
   Container,
@@ -9,19 +9,74 @@ import {
   InputGroup,
   Form,
   FormGroup,
+  FormFeedback,
 } from "reactstrap";
 import Link from "next/link";
 import { BASE_URL } from "constants/config";
 import Countdown from "react-countdown";
 import Image from "next/image";
+import { useDispatch, useSelector } from "react-redux";
+import { getProfile, login, sendOTPToLogin } from "@redux/actions/auth.action";
+import { toast } from "react-toastify";
+import { useRouter } from "next/router";
 
 export default function Lookup({ dataCategory }) {
   const [tab, setTab] = useState(1);
-  const [phone, setPhone] = useState();
-  const [otp, setOtp] = useState();
+  const [phone, setPhone] = useState("");
+  const [otp1, setOtp1] = useState();
+  const [otp2, setOtp2] = useState();
+  const [otp3, setOtp3] = useState();
+  const [otp4, setOtp4] = useState();
+  const [statusPhone, setStatusPhone] = useState(false);
+  const dispatch = useDispatch();
+  const state = useSelector((state) => state.auth);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (state.token) {
+      router.push("/lookup/information");
+    }
+  }, []);
 
   const handleChangeTab = (e) => {
-    setTab(e);
+    if (e === 2) {
+      if (phone.trim().length === 0) {
+        setStatusPhone(true);
+        return;
+      }
+      dispatch(
+        sendOTPToLogin(
+          {
+            phone,
+          },
+          () => {
+            setTab(e);
+          }
+        )
+      );
+    } else {
+      setTab(e);
+    }
+  };
+
+  const handleLoginOTP = () => {
+    const code = `${otp1}${otp2}${otp3}${otp4}`;
+    if (code.length !== 4) {
+      toast.error("OTP không hợp lệ");
+      return;
+    }
+    dispatch(
+      login(
+        {
+          phone,
+          otp: code,
+        },
+        () => {
+          dispatch(getProfile());
+          router.push("/lookup/information");
+        }
+      )
+    );
   };
 
   return (
@@ -54,8 +109,13 @@ export default function Lookup({ dataCategory }) {
                   className="border-radius-10"
                   placeholder="Nhập số điện thoại"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={(e) => {
+                    setPhone(e.target.value);
+                    setStatusPhone(false);
+                  }}
+                  invalid={statusPhone}
                 />
+                <FormFeedback>Vui lòng nhập số điện thoại</FormFeedback>
                 <Button
                   color="primary"
                   className="border-radius-10 mt-3 text-white"
@@ -74,8 +134,8 @@ export default function Lookup({ dataCategory }) {
                     <Input
                       name="otp"
                       className="border-radius-10"
-                      value={otp}
-                      onChange={(e) => setOtp(e.target.value)}
+                      value={otp1}
+                      onChange={(e) => setOtp1(e.target.value)}
                       style={{ width: 40 }}
                       maxLength="1"
                     />
@@ -83,24 +143,24 @@ export default function Lookup({ dataCategory }) {
                     <Input
                       name="otp"
                       className="border-radius-10"
-                      value={otp}
-                      onChange={(e) => setOtp(e.target.value)}
+                      value={otp2}
+                      onChange={(e) => setOtp2(e.target.value)}
                       style={{ width: 40 }}
                     />
                     &nbsp;-&nbsp;
                     <Input
                       name="otp"
                       className="border-radius-10"
-                      value={otp}
-                      onChange={(e) => setOtp(e.target.value)}
+                      value={otp3}
+                      onChange={(e) => setOtp3(e.target.value)}
                       style={{ width: 40 }}
                     />
                     &nbsp;-&nbsp;
                     <Input
                       name="otp"
                       className="border-radius-10"
-                      value={otp}
-                      onChange={(e) => setOtp(e.target.value)}
+                      value={otp4}
+                      onChange={(e) => setOtp4(e.target.value)}
                       style={{ width: 40 }}
                     />
                   </FormGroup>
@@ -108,10 +168,12 @@ export default function Lookup({ dataCategory }) {
                 <Button
                   color="primary"
                   className="border-radius-10 mt-3 mb-2 text-white"
+                  onClick={handleLoginOTP}
                 >
-                  <Link href={`/lookup/information`}>
+                  {/* <Link href={`/lookup/information`}>
                     <a className="text-decoration-none link-light">Tiếp tục</a>
-                  </Link>
+                  </Link> */}
+                  Tiếp tục
                 </Button>
                 <p>
                   Thử lại sau{" "}

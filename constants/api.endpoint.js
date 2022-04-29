@@ -1,5 +1,6 @@
 export const APIEnum = {
   REGISTER: "/auth/register",
+  SEND_OTP: "/auth/send-otp",
   LOGIN: "/auth/login",
   PROFILE: "/auth/profile",
   GET_TOKEN: "/auth/token",

@@ -136,7 +136,14 @@ export default function Product({ data, dataCategory }) {
             />
           </Col>
           <Col className="col-xl-4">
-            <Badge color="danger">Trả góp 0%</Badge>
+            <Badge color="danger">
+              Giảm giá{" "}
+              {((data.productVersions[0].price -
+                data.productVersions[0].salePrice) /
+                data.productVersions[0].price) *
+                100}
+              %
+            </Badge>
             <p className="pt-3">
               <span
                 style={{

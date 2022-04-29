@@ -65,14 +65,14 @@ export default function Navigation({ dataCategory }) {
                 </li>
                 <li className="nav-item">
                   <NavigationItem
-                    linkTo="/category/game"
+                    linkTo="/lookup"
                     text="Tra cứu đơn hàng"
                     icon={<FaShippingFast color="white" />}
                   />
                 </li>
                 <li className="nav-item">
                   <NavigationItem
-                    linkTo="/category/game"
+                    linkTo="/cart"
                     text="Giỏ hàng"
                     icon={<AiOutlineShoppingCart color="white" />}
                   />

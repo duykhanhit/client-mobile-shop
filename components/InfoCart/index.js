@@ -28,6 +28,8 @@ export default function InfoCart({ information, setInformation, isClick }) {
   const [coupon, setCoupon] = useState("");
   const [status, setStatus] = useState(null);
   const [isSend, setIsSend] = useState(false);
+  const [isCheckedAddress, setIsCheckedAddress] = useState(false);
+
   const dispatch = useDispatch();
   const state = useSelector((state) => state.auth);
 
@@ -87,6 +89,41 @@ export default function InfoCart({ information, setInformation, isClick }) {
           <Row>
             <Col md={6}>
               <FormGroup>
+                <Label for="exampleEmail">Giới tính</Label>
+                <Input
+                  id="exampleSelect"
+                  name="select"
+                  type="select"
+                  value={information.gender}
+                  onChange={(e) =>
+                    setInformation({
+                      ...information,
+                      gender: e.target.value,
+                    })
+                  }
+                  invalid={
+                    isClick
+                      ? information.gender?.trim()?.length === 0
+                        ? true
+                        : false
+                      : false
+                  }
+                  disabled={state.user ? true : false}
+                >
+                  <option value="" disabled selected>
+                    Giới tính
+                  </option>
+                  <option value={0}>Nam</option>
+                  <option value={1}>Nữ</option>
+                </Input>
+                <FormFeedback>Vui lòng chọn giới tính</FormFeedback>
+              </FormGroup>
+            </Col>
+            <Col md={6}></Col>
+          </Row>
+          <Row>
+            <Col md={6}>
+              <FormGroup>
                 <Label for="exampleEmail">Họ và tên</Label>
                 <Input
                   id="exampleEmail"
@@ -125,44 +162,90 @@ export default function InfoCart({ information, setInformation, isClick }) {
                     setInformation({
                       ...information,
                       phone: e.target.value,
+                      isPhone: false,
                     })
                   }
-                  invalid={
-                    isClick
-                      ? information.phone?.trim()?.length === 0
-                        ? true
-                        : false
-                      : false
-                  }
+                  invalid={information.isPhone}
                   disabled={state.user ? true : false}
                 />
                 <FormFeedback>Vui lòng nhập số điện thoại</FormFeedback>
               </FormGroup>
             </Col>
           </Row>
-          <FormGroup>
-            <Label for="exampleAddress">Địa chỉ</Label>
-            <Input
-              id="exampleAddress"
-              name="address"
-              placeholder="Nhập địa chỉ (bắt buộc)"
-              value={information.location}
-              onChange={(e) =>
-                setInformation({
-                  ...information,
-                  location: e.target.value,
-                })
-              }
-              invalid={
-                isClick
-                  ? information.location?.trim()?.length === 0
-                    ? true
+          {state?.user?.id ? (
+            <div class="form-check form-switch mb-3">
+              <Input
+                class="form-check-input"
+                type="checkbox"
+                role="switch"
+                id="flexSwitchCheckDefault"
+                checked={isCheckedAddress}
+                onChange={() => setIsCheckedAddress(!isCheckedAddress)}
+              />
+              <label class="form-check-label" for="flexSwitchCheckDefault">
+                Chọn địa chỉ
+              </label>
+            </div>
+          ) : (
+            ""
+          )}
+          {!isCheckedAddress ? (
+            <FormGroup>
+              <Label for="exampleAddress">Địa chỉ</Label>
+              <Input
+                id="exampleAddress"
+                name="address"
+                placeholder="Nhập địa chỉ (bắt buộc)"
+                value={information.location}
+                onChange={(e) =>
+                  setInformation({
+                    ...information,
+                    location: e.target.value,
+                  })
+                }
+                invalid={
+                  isClick
+                    ? information.location?.trim()?.length === 0
+                      ? true
+                      : false
                     : false
-                  : false
-              }
-            />
-            <FormFeedback>Vui lòng nhập địa chỉ</FormFeedback>
-          </FormGroup>
+                }
+              />
+              <FormFeedback>Vui lòng nhập địa chỉ</FormFeedback>
+            </FormGroup>
+          ) : (
+            <FormGroup>
+              <FormGroup>
+                <Input
+                  id="exampleSelect"
+                  name="select"
+                  type="select"
+                  value={information.location}
+                  onChange={(e) =>
+                    setInformation({
+                      ...information,
+                      location: e.target.value,
+                    })
+                  }
+                  invalid={
+                    isClick
+                      ? information.location?.trim()?.length === 0
+                        ? true
+                        : false
+                      : false
+                  }
+                >
+                  <option value="" disabled selected>
+                    Chọn địa chỉ có sẵn
+                  </option>
+                  {state?.user?.locations?.map((e, i) => (
+                    <option value={e.address}>{e.address}</option>
+                  ))}
+                </Input>
+              </FormGroup>
+              <FormFeedback>Vui lòng chọn giới tính</FormFeedback>
+            </FormGroup>
+          )}
           <Row>
             <Label for="coupon">Mã giảm giá</Label>
             <Col xs={6}>

@@ -32,7 +32,7 @@ export default function InputCustom() {
         }}
         onChange={(e) => handleSearch(e)}
         onClick={() => setIsShow(true)}
-        onBlur={() => setIsShow(false)}
+        // onBlur={() => setIsShow(false)}
       />
 
       {isShow ? (

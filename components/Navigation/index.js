@@ -8,11 +8,18 @@ import { GoLocation } from "react-icons/go";
 import { VscCallIncoming } from "react-icons/vsc";
 import InputCustom from "@components/InputCustom";
 import NavigationItem from "@components/NavigationItem";
+import { getFromLocal } from "common/local-storage";
+import { useDispatch } from "react-redux";
+import { getProfile } from "@redux/actions/auth.action";
 
 export default function Navigation({ dataCategory }) {
   const [visible, setVisible] = useState(false);
   const [addClass, setAddClass] = useState(" d-none");
 
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getProfile());
+  }, [dispatch]);
   const handleToggleMenu = () => {
     setVisible(!visible);
     visible
@@ -58,8 +65,8 @@ export default function Navigation({ dataCategory }) {
                 </li>
                 <li className="nav-item">
                   <NavigationItem
-                    linkTo="/category/game"
-                    text="Cửa hàng gần bạn"
+                    linkTo="/danh-sach-cua-hang"
+                    text="Danh sách cửa hàng"
                     icon={<GoLocation color="white" />}
                   />
                 </li>
@@ -72,6 +79,7 @@ export default function Navigation({ dataCategory }) {
                 </li>
                 <li className="nav-item">
                   <NavigationItem
+                    quantity={getFromLocal("cart")?.length || 0}
                     linkTo="/cart"
                     text="Giỏ hàng"
                     icon={<AiOutlineShoppingCart color="white" />}
@@ -79,7 +87,7 @@ export default function Navigation({ dataCategory }) {
                 </li>
                 <li className="nav-item">
                   <NavigationItem
-                    linkTo="/category/game"
+                    linkTo="/member"
                     text="Smember"
                     icon={<BiUserCircle color="white" />}
                   />

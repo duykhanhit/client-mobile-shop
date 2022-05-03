@@ -11,7 +11,9 @@ const orderReducer = (state = initialState, action) => {
     case types.LIST_ORDER:
       return {
         ...state,
-        items: action.data.items,
+        items: action.isNew
+          ? action.data.items
+          : [...state.items, ...action.data.items],
         meta: action.data.meta,
       };
     case types.DETAIL_ORDER:

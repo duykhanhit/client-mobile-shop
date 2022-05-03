@@ -39,3 +39,5 @@ export const OrderStatus = [
 ];
 
 export const ReviewEnum = ["Rất tệ", "Tệ", "Bình thường", "Tốt", "Rất tốt"];
+
+export const GenderEnum = ["Anh", "Chị"];

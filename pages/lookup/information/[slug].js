@@ -18,13 +18,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { detailOrder } from "@redux/actions/order.action";
 import Link from "next/link";
 import { OrderStatus } from "constants/filter.constant";
+import { isEmpty } from "lodash";
+import { useRouter } from "next/router";
 
 export default function DetailInformation({ id, dataCategory }) {
   const dispatch = useDispatch();
   const state = useSelector((state) => state);
+  const router = useRouter();
+
   useEffect(() => {
-    dispatch(detailOrder(id));
-  }, []);
+    dispatch(detailOrder(id, () => router.push("/404")));
+  }, [dispatch]);
 
   return (
     <MainLayout title={"Chi tiết đơn hàng"} dataCategory={dataCategory}>

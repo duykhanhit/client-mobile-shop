@@ -40,7 +40,10 @@ export default function Lookup({ dataCategory }) {
 
   const handleChangeTab = (e) => {
     if (e === 2) {
-      if (phone.trim().length === 0) {
+      if (
+        phone.trim().length === 0 ||
+        !new RegExp("(0[3|5|7|8|9])+([0-9]{8})", "g").test(phone)
+      ) {
         setStatusPhone(true);
         return;
       }

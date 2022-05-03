@@ -16,7 +16,11 @@ import ItemCart from "@components/ItemCart";
 import InfoCart from "@components/InfoCart";
 import { getFromLocal, resetItemInLocal } from "common/local-storage";
 import { useRouter } from "next/router";
-import { STEP_ORDER, STEP_ORDER_ENUM } from "constants/filter.constant";
+import {
+  GenderEnum,
+  STEP_ORDER,
+  STEP_ORDER_ENUM,
+} from "constants/filter.constant";
 import { toast } from "react-toastify";
 
 export default function Cart({ dataCategory }) {
@@ -27,6 +31,8 @@ export default function Cart({ dataCategory }) {
     phone: "",
     coupon: null,
     location: "",
+    gender: "",
+    isGender: false,
     isFullname: false,
     isPhone: false,
     isLocation: false,
@@ -44,6 +50,7 @@ export default function Cart({ dataCategory }) {
       isFullname: false,
       isPhone: false,
       isLocation: false,
+      isGender: false,
     };
 
     if (information.fullname.trim().length === 0) {
@@ -52,7 +59,18 @@ export default function Cart({ dataCategory }) {
         isFullname: true,
       };
     }
-    if (information.phone.trim().length === 0) {
+
+    if (information.gender.trim().length === 0) {
+      isFail = {
+        ...isFail,
+        isGender: true,
+      };
+    }
+
+    if (
+      information.phone.trim().length === 0 ||
+      !new RegExp("(0[3|5|7|8|9])+([0-9]{8})", "g").test(information.phone)
+    ) {
       isFail = {
         ...isFail,
         isPhone: true,
@@ -65,7 +83,12 @@ export default function Cart({ dataCategory }) {
       };
     }
 
-    if (isFail.isFullname || isFail.isLocation || isFail.isPhone) {
+    if (
+      isFail.isFullname ||
+      isFail.isLocation ||
+      isFail.isPhone ||
+      isFail.isGender
+    ) {
       setInformation({
         ...information,
         ...isFail,
@@ -82,7 +105,7 @@ export default function Cart({ dataCategory }) {
     dataSubmit.phone = information.phone;
     dataSubmit.address = information.location;
     dataSubmit.fullname = information.fullname;
-    dataSubmit.gender = 0; // fake
+    dataSubmit.gender = +information.gender;
     if (information.coupon) dataSubmit.couponId = information.coupon;
     dataSubmit.products = getFromLocal("cart").map((e) => ({
       productVersionId: e.version.id,
@@ -143,7 +166,10 @@ export default function Cart({ dataCategory }) {
                   <CardBody>
                     <CardTitle tag="h5">Thông tin người mua</CardTitle>
                     <Row>
-                      <Col md={12}>Họ tên: {information.fullname}</Col>
+                      <Col md={12}>
+                        Họ tên: ({GenderEnum[information.gender]}){" "}
+                        {information.fullname}
+                      </Col>
                       <Col md={12}>Số điện thoại: {information.phone}</Col>
                       <Col md={12}>Địa chỉ: {information.location}</Col>
                     </Row>

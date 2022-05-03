@@ -62,3 +62,12 @@ export const getProfile = () => {
     }
   };
 };
+
+export const logout = () => {
+  return async (dispatch) => {
+    dispatch({
+      type: types.LOGOUT,
+    });
+    window.location.reload();
+  };
+};

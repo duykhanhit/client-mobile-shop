@@ -56,8 +56,8 @@ export default function Product({ data, dataCategory }) {
   const [content, setContent] = useState("");
   const [isContent, setIsContent] = useState(false);
   const [rate, setRate] = useState(-1);
-  const [phone, setPhone] = useState();
-  const [otp, setOtp] = useState();
+  const [phone, setPhone] = useState("");
+  const [otp, setOtp] = useState("");
   const [isSend, setIsSend] = useState(false);
   const dispatch = useDispatch();
   const state = useSelector((state) => state);
@@ -121,7 +121,7 @@ export default function Product({ data, dataCategory }) {
       addToLocal("cart", selectedItem);
       router.push("/cart");
     } else {
-      toast.error("Bạn chưa chọn phiên bản");
+      toast.error("Bạn chưa chọn sản phẩm");
     }
   };
 
@@ -359,7 +359,7 @@ export default function Product({ data, dataCategory }) {
                       <Button
                         color="danger"
                         onClick={function noRefCheck() {
-                          setIsOpenModalLogin(!isOpenModal);
+                          setIsOpenModalLogin(!isOpenModalLogin);
                         }}
                       >
                         Đăng nhập để đánh giá
@@ -473,7 +473,7 @@ export default function Product({ data, dataCategory }) {
                 >
                   <ModalHeader
                     toggle={function noRefCheck() {
-                      setIsOpenModalLogin(!isOpenModal);
+                      setIsOpenModalLogin(!isOpenModalLogin);
                     }}
                   >
                     Đăng nhập

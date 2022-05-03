@@ -187,3 +187,7 @@ body {
   background: var(--primary);
   text-shadow: var(--primary-tshadow);
 }
+
+.modal-open {
+  padding: 0 !important;
+}

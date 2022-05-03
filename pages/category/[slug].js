@@ -269,7 +269,7 @@ export default function Category({
             ))}
           </div>
           <div className="text-center mt-2">
-            <Button onClick={handleLoadMore}>
+            <Button color="danger" onClick={handleLoadMore}>
               Xem thêm{" "}
               {isLoadingLoadMore ? <Spinner size="sm">Loading...</Spinner> : ""}
             </Button>

@@ -10,6 +10,13 @@ import {
   ListGroup,
   ListGroupItem,
   Table,
+  Button,
+  FormGroup,
+  Input,
+  FormFeedback,
+  Modal,
+  ModalHeader,
+  ModalBody,
 } from "reactstrap";
 import { BASE_URL } from "constants/config";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,9 +26,22 @@ import { listOrder } from "@redux/actions/order.action";
 import { formatMoney, formatTime } from "common/common";
 import { OrderStatus } from "constants/filter.constant";
 import Link from "next/link";
+import { AiFillEdit, AiFillDelete } from "react-icons/ai";
+import { deleteLocation, updateLocation } from "@redux/actions/location.action";
+import { isEmpty } from "lodash";
+import { toast } from "react-toastify";
 
 export default function LookupInformation({ dataCategory }) {
   const [tab, setTab] = useState(1);
+  const [page, setPage] = useState(1);
+  const [isAddress, setIsAddress] = useState(false);
+  const [isNewAddress, setNewIsAddress] = useState(false);
+  const [editedItem, setEditedItem] = useState();
+  const [deletedItem, setDeletedItem] = useState();
+  const [modalDelete, setModalDelete] = useState(false);
+  const [isShowInput, setIsShowInput] = useState(false);
+  const [address, setAddress] = useState("");
+  const [newAddress, setNewAddress] = useState("");
   const dispatch = useDispatch();
   const state = useSelector((state) => state);
   const router = useRouter();
@@ -33,8 +53,12 @@ export default function LookupInformation({ dataCategory }) {
       router.push("/lookup");
     }
 
-    dispatch(listOrder({ page: 1, isMe: 1 }));
+    dispatch(listOrder({ page: page, isMe: 1 }));
   }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(listOrder({ page: page, isMe: 1 }));
+  }, [dispatch, page]);
 
   const handleChangeTab = (e) => {
     setTab(e);
@@ -121,6 +145,11 @@ export default function LookupInformation({ dataCategory }) {
                     ))}
                   </tbody>
                 </Table>
+                <div className="text-center">
+                  <Button color="danger" onClick={() => setPage(page + 1)}>
+                    Xem thêm
+                  </Button>
+                </div>
               </>
             ) : (
               <>
@@ -135,13 +164,141 @@ export default function LookupInformation({ dataCategory }) {
                     </Row>
                   </CardBody>
                 </Card>
-                <h5>Danh sách địa chỉ</h5>
+                <h5>
+                  Danh sách địa chỉ{" "}
+                  <Button
+                    color="primary"
+                    className="text-white"
+                    onClick={() => setIsShowInput(true)}
+                  >
+                    Thêm địa chỉ
+                  </Button>
+                </h5>
 
                 <ListGroup>
-                  {state.auth?.user?.locations?.map((e) => (
-                    <ListGroupItem>{e.address}</ListGroupItem>
+                  {state?.auth?.user?.locations?.map((e, i) => (
+                    <ListGroupItem key={i}>
+                      <FormGroup>
+                        <Input
+                          id="exampleAddress"
+                          name="address"
+                          value={editedItem?.id === e.id ? address : e.address}
+                          placeholder="Địa chỉ"
+                          disabled={editedItem?.id === e.id ? false : true}
+                          onChange={(e) => {
+                            setAddress(e.target.value);
+                            if (e.target.value.trim().length === 0)
+                              setIsAddress(true);
+                            else setIsAddress(false);
+                          }}
+                          invalid={isAddress}
+                        />
+                        <FormFeedback>Vui lòng nhập địa chỉ</FormFeedback>
+                      </FormGroup>
+                      <span
+                        className="link-hover cursor-pointer"
+                        onClick={() => {
+                          setEditedItem(e);
+                          setAddress(e.address);
+                        }}
+                      >
+                        <AiFillEdit color="#198754" /> Sửa&nbsp;
+                      </span>
+                      <span
+                        className="link-hover cursor-pointer"
+                        onClick={() => {
+                          setDeletedItem(e);
+                          setModalDelete(true);
+                        }}
+                      >
+                        <AiFillDelete color="#d70018" /> Xoá
+                      </span>
+                      <Modal
+                        isOpen={modalDelete}
+                        toggle={() => setModalDelete(!modalDelete)}
+                      >
+                        <ModalHeader toggle={() => setModalDelete(false)}>
+                          Bạn có chắc chắn muốn xoá?
+                        </ModalHeader>
+                        <ModalBody className="text-center">
+                          <Button
+                            color="danger"
+                            onClick={() => setModalDelete(false)}
+                          >
+                            Huỷ
+                          </Button>{" "}
+                          <Button
+                            color="success"
+                            onClick={() => {
+                              dispatch(
+                                deleteLocation(deletedItem.id, () => {
+                                  dispatch(getProfile());
+                                  setModalDelete(false);
+                                })
+                              );
+                            }}
+                          >
+                            Đồng ý
+                          </Button>
+                        </ModalBody>
+                      </Modal>
+                    </ListGroupItem>
                   ))}
+
+                  {/* {isShowInput ? (
+                    <ListGroupItem>
+                      <FormGroup>
+                        <Input
+                          id="exampleAddress"
+                          name="address"
+                          value={newAddress}
+                          placeholder="Địa chỉ"
+                          onChange={(e) => {
+                            setNewAddress(e.target.value);
+                            if (e.target.value.trim().length === 0)
+                              setNewIsAddress(true);
+                            else setNewIsAddress(false);
+                          }}
+                          invalid={isAddress}
+                        />
+                        <FormFeedback>Vui lòng nhập địa chỉ</FormFeedback>
+                      </FormGroup>
+                      <span
+                        className="link-hover cursor-pointer"
+                        onClick={() => {
+                          setIsShowInput(false);
+                          setNewAddress("");
+                        }}
+                      >
+                        <AiFillDelete color="#d70018" /> Huỷ
+                      </span>
+                    </ListGroupItem>
+                  ) : (
+                    ""
+                  )} */}
                 </ListGroup>
+                <div className="text-center mt-3">
+                  <Button
+                    color="success"
+                    onClick={() => {
+                      if (address.trim().length === 0) {
+                        return setIsAddress(true);
+                      }
+                      if (!isEmpty(editedItem)) {
+                        dispatch(
+                          updateLocation(editedItem.id, { address }, () => {
+                            dispatch(getProfile());
+                            setEditedItem(null);
+                          })
+                        );
+                      } else {
+                        toast.info("Không có gì thay đổi");
+                      }
+                    }}
+                  >
+                    Cập nhật
+                  </Button>
+                </div>
               </>
             )}
           </Col>

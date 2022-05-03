@@ -15,4 +15,5 @@ export const APIEnum = {
   USER: "/user",
   ORDER: "/order",
   REVIEW: "/review",
+  LOCATION: "/location",
 };

@@ -1,4 +1,9 @@
-import { getProfile, login, sendOTPToLogin } from "@redux/actions/auth.action";
+import {
+  getProfile,
+  login,
+  logout,
+  sendOTPToLogin,
+} from "@redux/actions/auth.action";
 import { BASE_URL } from "constants/config";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -29,11 +34,20 @@ export default function InfoCart({ information, setInformation, isClick }) {
   const [status, setStatus] = useState(null);
   const [isSend, setIsSend] = useState(false);
   const [isCheckedAddress, setIsCheckedAddress] = useState(false);
+  const [statusPhone, setStatusPhone] = useState(false);
 
   const dispatch = useDispatch();
   const state = useSelector((state) => state.auth);
 
   const handleSubmit = () => {
+    if (
+      phone.trim().length === 0 ||
+      !new RegExp("(0[3|5|7|8|9])+([0-9]{8})", "g").test(phone)
+    ) {
+      setStatusPhone(true);
+      return;
+    }
+
     dispatch(
       login(
         {
@@ -55,6 +69,7 @@ export default function InfoCart({ information, setInformation, isClick }) {
         ...information,
         phone: state.user?.phone,
         fullname: state.user?.fullname,
+        gender: state.user?.gender,
       });
     }
   }, [state]);
@@ -103,7 +118,7 @@ export default function InfoCart({ information, setInformation, isClick }) {
                   }
                   invalid={
                     isClick
-                      ? information.gender?.trim()?.length === 0
+                      ? information.gender?.toString()?.trim()?.length === 0
                         ? true
                         : false
                       : false
@@ -119,7 +134,17 @@ export default function InfoCart({ information, setInformation, isClick }) {
                 <FormFeedback>Vui lòng chọn giới tính</FormFeedback>
               </FormGroup>
             </Col>
-            <Col md={6}></Col>
+            <Col
+              md={6}
+              className="d-flex justify-content-end align-items-center"
+            >
+              <div
+                className="cursor-pointer text-danger"
+                onClick={() => dispatch(logout())}
+              >
+                {state?.user?.id ? "Sử dụng tài khoản khác?" : ""}
+              </div>
+            </Col>
           </Row>
           <Row>
             <Col md={6}>
@@ -183,7 +208,7 @@ export default function InfoCart({ information, setInformation, isClick }) {
                 onChange={() => setIsCheckedAddress(!isCheckedAddress)}
               />
               <label class="form-check-label" for="flexSwitchCheckDefault">
-                Chọn địa chỉ
+                Chọn địa chỉ có sẵn
               </label>
             </div>
           ) : (
@@ -334,11 +359,25 @@ export default function InfoCart({ information, setInformation, isClick }) {
                         placeholder="Số điện thoại"
                         type="text"
                         value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
+                        onChange={(e) => {
+                          setPhone(e.target.value);
+                          setStatusPhone(false);
+                        }}
                         valid={isSend}
+                        invalid={statusPhone}
                       />
                       <Button
-                        onClick={() =>
+                        onClick={() => {
+                          if (
+                            phone.trim().length === 0 ||
+                            !new RegExp("(0[3|5|7|8|9])+([0-9]{8})", "g").test(
+                              phone
+                            )
+                          ) {
+                            setStatusPhone(true);
+                            return;
+                          }
+
                           dispatch(
                             sendOTPToLogin(
                               {
@@ -346,12 +385,12 @@ export default function InfoCart({ information, setInformation, isClick }) {
                               },
                               () => setIsSend(true)
                             )
-                          )
-                        }
+                          );
+                        }}
                       >
                         Lấy mã OTP
                       </Button>
-                      {/* <FormFeedback>hehe</FormFeedback> */}
+                      <FormFeedback>Vui lòng nhập số điện thoại</FormFeedback>
                     </InputGroup>
                   </FormGroup>
                 </Col>

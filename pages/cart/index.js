@@ -60,7 +60,7 @@ export default function Cart({ dataCategory }) {
       };
     }
 
-    if (information.gender.trim().length === 0) {
+    if (information.gender.toString().trim().length === 0) {
       isFail = {
         ...isFail,
         isGender: true,
@@ -194,7 +194,7 @@ export default function Cart({ dataCategory }) {
                     getFromLocal("cart").reduce(
                       (total, item) =>
                         total +
-                        item.version.price * item.version.currentQuantity,
+                        item.version.salePrice * item.version.currentQuantity,
                       0
                     ) *
                       ((100 - information.value || 0) / 100)
@@ -206,7 +206,8 @@ export default function Cart({ dataCategory }) {
                         getFromLocal("cart").reduce(
                           (total, item) =>
                             total +
-                            item.version.price * item.version.currentQuantity,
+                            item.version.salePrice *
+                              item.version.currentQuantity,
                           0
                         ) *
                           ((information.value || 0) / 100)

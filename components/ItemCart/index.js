@@ -61,16 +61,28 @@ export default function ItemCart({ product, setIsDelete, isDelete, isView }) {
                   product.version.salePrice || product.version.price
                 )}
               </span>
+              {product.version.salePrice === product.version.price ? (
+                ""
+              ) : (
+                <>
+                  &nbsp;&nbsp;
+                  <del>{formatMoney(product.version.price)}</del>
+                </>
+              )}
               &nbsp;&nbsp;
-              <del>{formatMoney(product.version.price)}</del>
-              &nbsp;&nbsp;
-              <Badge color="danger">
-                Giảm giá{" "}
-                {((product.version.price - product.version.salePrice) /
-                  product.version.price) *
-                  100}
-                %
-              </Badge>
+              {product.version.salePrice === product.version.price ? (
+                <Badge color="danger">Trả góp 0%</Badge>
+              ) : (
+                <Badge color="danger">
+                  Giảm giá{" "}
+                  {Math.round(
+                    ((product.version.price - product.version.salePrice) /
+                      product.version.price) *
+                      100
+                  )}
+                  %
+                </Badge>
+              )}
             </p>
             <div className="d-flex align-items-center">
               <b style={{ width: 100 }}>Số lượng: </b>

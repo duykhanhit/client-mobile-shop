@@ -119,6 +119,7 @@ export default function Category({
     const newResponse = await fetch(
       `${BASE_URL}/api/product?${stringify({
         ...router.query,
+        categoryId: router.query.slug,
       })}`
     );
     const newProducts = await newResponse.json();

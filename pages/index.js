@@ -2,13 +2,13 @@ import Item from "@components/Item";
 import MainLayout from "@components/MainLayout";
 import Slide from "@components/Slide";
 import { BASE_URL } from "constants/config";
+import Image from "next/image";
 import Link from "next/link";
 
 export default function Home({
   dataTopView,
   dataMobile,
   dataLaptop,
-  dataWatch,
   dataSetting,
   dataCategory,
 }) {
@@ -58,23 +58,16 @@ export default function Home({
         ""
       )}
 
-      {dataWatch?.items?.length ? (
-        <>
-          <Link href={`/category/5`}>
-            <a className="text-decoration-none link-dark">
-              <h4 className="mt-3">ĐỒNG HỒ</h4>
-            </a>
-          </Link>
-
-          <div className="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
-            {dataWatch.items.map((item, index) => (
-              <Item key={index} item={item} />
-            ))}
-          </div>
-        </>
-      ) : (
-        ""
-      )}
+      <>
+        <Image
+          alt="demo"
+          className="rounded mx-auto d-block pt-3 img-fluid cursor-pointer"
+          src={`https://i.imgur.com/X8r0V4O.png`}
+          width="100"
+          height="20"
+          layout={"responsive"}
+        />
+      </>
     </MainLayout>
   );
 }
@@ -90,9 +83,6 @@ export async function getServerSideProps() {
   const resLaptop = await fetch(`${BASE_URL}/api/product?categoryId=3`);
   const dataLaptop = await resLaptop.json();
 
-  const resWatch = await fetch(`${BASE_URL}/api/product?categoryId=5`);
-  const dataWatch = await resWatch.json();
-
   const settingRes = await fetch(`${BASE_URL}/api/setting`);
   const dataSetting = await settingRes.json();
   const categories = await fetch(`${BASE_URL}/api/category?isGetAll=1`);
@@ -103,7 +93,6 @@ export async function getServerSideProps() {
       dataTopView: dataTopView.data,
       dataMobile: dataMobile.data,
       dataLaptop: dataLaptop.data,
-      dataWatch: dataWatch.data,
       dataSetting: dataSetting.data,
       dataCategory: dataCategory.data,
     },

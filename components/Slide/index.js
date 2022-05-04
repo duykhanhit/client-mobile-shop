@@ -91,11 +91,19 @@ export default function Slide({ dataCategory }) {
             items={[
               {
                 key: 2,
-                src: "https://cdn.cellphones.com.vn/media/ltsoft/promotion/mI_12.png",
+                src: "https://cdn.cellphones.com.vn/media/ltsoft/promotion/Wh-1000xm4.png",
               },
               {
                 key: 3,
-                src: "https://cdn.cellphones.com.vn/media/ltsoft/promotion/reno7.png",
+                src: "https://cdn.cellphones.com.vn/media/ltsoft/promotion/ip13-xl-sh-690-300-max.png",
+              },
+              {
+                key: 4,
+                src: "https://cdn.cellphones.com.vn/media/ltsoft/promotion/LG_Stand.png",
+              },
+              {
+                key: 5,
+                src: "https://cdn.cellphones.com.vn/media/ltsoft/promotion/photo_2022-04-28_11-15-29.jpg",
               },
             ]}
             className="border-radius-10"
@@ -105,21 +113,21 @@ export default function Slide({ dataCategory }) {
           <Image
             alt="demo"
             className="mx-auto d-block img-fluid cursor-pointer border-radius-10"
-            src="https://cdn.cellphones.com.vn/media/ltsoft/promotion/13_series_right_desk.png"
+            src="https://cdn.cellphones.com.vn/media/ltsoft/promotion/Right-Banner_Galaxy-A53.png"
             width="265px"
             height="115px"
           />
           <Image
             alt="demo"
             className="mx-auto d-block img-fluid cursor-pointer border-radius-10"
-            src="https://cdn.cellphones.com.vn/media/ltsoft/promotion/13_series_right_desk.png"
+            src="https://cdn.cellphones.com.vn/media/ltsoft/promotion/RB_iPad-Air.png"
             width="265px"
             height="115px"
           />
           <Image
             alt="demo"
             className="mx-auto d-block img-fluid cursor-pointer border-radius-10"
-            src="https://cdn.cellphones.com.vn/media/ltsoft/promotion/13_series_right_desk.png"
+            src="https://cdn.cellphones.com.vn/media/ltsoft/promotion/690-300-Right_dell.png"
             width="265px"
             height="115px"
           />

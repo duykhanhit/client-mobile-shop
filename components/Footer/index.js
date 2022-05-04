@@ -1,5 +1,7 @@
 import React from "react";
 import { Col, Container, Row } from "reactstrap";
+import { BsFacebook, BsYoutube } from "react-icons/bs";
+import { FaTiktok, FaCcPaypal, FaCcVisa, FaCcMastercard } from "react-icons/fa";
 
 export default function Footer() {
   return (
@@ -12,34 +14,52 @@ export default function Footer() {
         <Container>
           <Row className="pt-3">
             <Col>
-              <h5>Tìm cừa hàng</h5>
-              <p>Tìm cửa hàng gần nhất</p>
-              <p>Mua hàng từ xa</p>
-              <p>Gặp trực tiếp cửa hàng gần nhất</p>
+              <h5>Thông tin</h5>
+              <p>
+                Đối tượng phục vụ là tất cả các khách hàng có nhu cầu mua hàng,
+                đặt hàng thông qua website thương mại điện tử.
+              </p>
+              <p>
+                Sản phẩm được kinh doanh tại Cellphones.com.vn phải đáp ứng đầy
+                đủ các quy định của nhà nước về nguồn gốc, xuất xứ hàng hóa,
+                chất lượng sản phẩm.
+              </p>
             </Col>
             <Col>
+              <h5>Liên hệ</h5>
               <p>Gọi mua hàng: 1800.2097 (8h00 - 22h00)</p>
               <p>Gọi khiếu nại: 1800.2063 (8h00 - 21h30)</p>
               <p>Gọi bảo hành: 1800.2064 (8h00 - 21h00)</p>
             </Col>
             <Col>
-              <p>Mua hàng và thanh toán Online</p>
-              <p>Mua hàng trả góp Online</p>
-              <p>Tra thông tin đơn hàng</p>
-              <p>Tra điểm Smember</p>
-              <p>Tra thông tin bảo hành</p>
-              <p>Tra cứu hoá đơn điện tử</p>
-              <p>Trung tâm bảo hành chính hãng</p>
-              <p>Quy định về việc sao lưu dữ liệu</p>
-              <p>Dịch vụ bảo hành điện thoại</p>
+              <h5>Thanh toán</h5>
+              <div>
+                <FaCcPaypal color="#4285F4" size={28} />
+                <FaCcVisa
+                  color="#EA4335"
+                  size={28}
+                  style={{
+                    marginRight: 15,
+                    marginLeft: 15,
+                  }}
+                />
+                <FaCcMastercard color="#34A853" size={28} />
+              </div>
             </Col>
             <Col>
-              <p>Quy chế hoạt động</p>
-              <p>Chính sách Bảo hành</p>
-              <p>Liên hệ hợp tác kinh doanh</p>
-              <p>Đơn Doanh nghiệp</p>
-              <p>Ưu đãi từ đối tác</p>
-              <p>Tuyển dụng</p>
+              <h5>Kết nối với chúng tôi</h5>
+              <div>
+                <BsFacebook size={28} color="#4267b2" />
+                <BsYoutube
+                  size={28}
+                  color="#EA4335"
+                  style={{
+                    marginRight: 15,
+                    marginLeft: 15,
+                  }}
+                />
+                <FaTiktok size={28} />
+              </div>
             </Col>
           </Row>
         </Container>

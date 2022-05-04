@@ -13,8 +13,9 @@ export default function Item({ item }) {
           alt="demo"
           className="rounded mx-auto d-block pt-3 img-fluid cursor-pointer"
           src={`${BASE_URL}/${item.productImages[0].url}`}
-          width="160px"
-          height="160px"
+          width="100"
+          height="80"
+          layout={"responsive"}
         />
         <Link href={`/product/${item.id}`}>
           <a className="text-decoration-none link-dark">

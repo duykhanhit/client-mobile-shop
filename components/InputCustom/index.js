@@ -1,20 +1,19 @@
 import { BASE_URL } from "constants/config";
 import { debounce } from "lodash";
-import Link from "next/link";
 import React, { useState } from "react";
-import { Input, ListGroup, ListGroupItem } from "reactstrap";
+import { Button, Input, InputGroup } from "reactstrap";
+import { BsSearch } from "react-icons/bs";
+import Link from "next/link";
 
 export default function InputCustom() {
   const [result, setResult] = useState([]);
-  const [isShow, setIsShow] = useState(false);
   const [keyword, setKeyword] = useState("");
 
-  const handleSearch = (e) => {
-    setKeyword(e.target.value);
+  const handleSearch = () => {
     debounce(async () => {
-      if (e.target.value?.length) {
+      if (keyword?.length) {
         const res = await fetch(
-          `${BASE_URL}/api/product?keyword=${e.target.value}&limit=5`
+          `${BASE_URL}/api/product?keyword=${keyword}&limit=5`
         );
         const data = await res.json();
         setResult(data.data.items);
@@ -24,40 +23,30 @@ export default function InputCustom() {
 
   return (
     <>
-      <Input
-        placeholder="Tìm kiếm"
-        style={{
-          borderRadius: 10,
-          position: "relative",
-        }}
-        onChange={(e) => handleSearch(e)}
-        onClick={() => setIsShow(true)}
-        // onBlur={() => setIsShow(false)}
-      />
-
-      {isShow ? (
-        <ListGroup
+      <InputGroup>
+        <Input
+          className="border-radius-10"
+          name="keyword"
+          placeholder="Nhập từ khoá"
+          type="text"
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+        />
+        <Button
           style={{
-            position: "absolute",
+            borderTopRightRadius: 10,
+            borderBottomRightRadius: 10,
           }}
+          className="d-flex align-items-center"
+          color="warning"
         >
-          {result?.length ? (
-            result.map((e) => (
-              <ListGroupItem>
-                <Link href={`/product/${e.id}`}>
-                  <a className="text-decoration-none link-dark">{e.name}</a>
-                </Link>
-              </ListGroupItem>
-            ))
-          ) : keyword.length ? (
-            <ListGroupItem>Không tìm thấy dữ liệu</ListGroupItem>
-          ) : (
-            <ListGroupItem>Nhập từ khoá</ListGroupItem>
-          )}
-        </ListGroup>
-      ) : (
-        ""
-      )}
+          <Link href={`/search?keyword=${keyword}`}>
+            <a className="text-decoration-none link-light">
+              <BsSearch />
+            </a>
+          </Link>
+        </Button>
+      </InputGroup>
     </>
   );
 }

@@ -27,7 +27,11 @@ import { formatMoney, formatTime } from "common/common";
 import { OrderStatus } from "constants/filter.constant";
 import Link from "next/link";
 import { AiFillEdit, AiFillDelete } from "react-icons/ai";
-import { deleteLocation, updateLocation } from "@redux/actions/location.action";
+import {
+  createLocation,
+  deleteLocation,
+  updateLocation,
+} from "@redux/actions/location.action";
 import { isEmpty } from "lodash";
 import { toast } from "react-toastify";
 
@@ -169,7 +173,10 @@ export default function LookupInformation({ dataCategory }) {
                   <Button
                     color="primary"
                     className="text-white"
-                    onClick={() => setIsShowInput(true)}
+                    onClick={() => {
+                      setIsShowInput(true);
+                      setEditedItem();
+                    }}
                   >
                     Thêm địa chỉ
                   </Button>
@@ -200,6 +207,7 @@ export default function LookupInformation({ dataCategory }) {
                         onClick={() => {
                           setEditedItem(e);
                           setAddress(e.address);
+                          setIsShowInput(false);
                         }}
                       >
                         <AiFillEdit color="#198754" /> Sửa&nbsp;
@@ -209,6 +217,7 @@ export default function LookupInformation({ dataCategory }) {
                         onClick={() => {
                           setDeletedItem(e);
                           setModalDelete(true);
+                          setIsShowInput(false);
                         }}
                       >
                         <AiFillDelete color="#d70018" /> Xoá
@@ -245,7 +254,7 @@ export default function LookupInformation({ dataCategory }) {
                     </ListGroupItem>
                   ))}
 
-                  {/* {isShowInput ? (
+                  {isShowInput ? (
                     <ListGroupItem>
                       <FormGroup>
                         <Input
@@ -253,13 +262,14 @@ export default function LookupInformation({ dataCategory }) {
                           name="address"
                           value={newAddress}
                           placeholder="Địa chỉ"
+                          onClick={() => setEditedItem()}
                           onChange={(e) => {
                             setNewAddress(e.target.value);
                             if (e.target.value.trim().length === 0)
                               setNewIsAddress(true);
                             else setNewIsAddress(false);
                           }}
-                          invalid={isAddress}
+                          invalid={isNewAddress}
                         />
                         <FormFeedback>Vui lòng nhập địa chỉ</FormFeedback>
                       </FormGroup>
@@ -275,24 +285,42 @@ export default function LookupInformation({ dataCategory }) {
                     </ListGroupItem>
                   ) : (
                     ""
-                  )} */}
+                  )}
                 </ListGroup>
                 <div className="text-center mt-3">
                   <Button
                     color="success"
                     onClick={() => {
-                      if (address.trim().length === 0) {
-                        return setIsAddress(true);
-                      }
-                      if (!isEmpty(editedItem)) {
-                        dispatch(
-                          updateLocation(editedItem.id, { address }, () => {
-                            dispatch(getProfile());
-                            setEditedItem(null);
-                          })
-                        );
+                      if (!isShowInput) {
+                        if (!isEmpty(editedItem)) {
+                          if (address.trim().length === 0) {
+                            return setIsAddress(true);
+                          }
+                          return dispatch(
+                            updateLocation(editedItem.id, { address }, () => {
+                              dispatch(getProfile());
+                              setEditedItem(null);
+                            })
+                          );
+                        } else {
+                          toast.info("Không có gì thay đổi");
+                        }
                       } else {
-                        toast.info("Không có gì thay đổi");
+                        if (newAddress.trim().length === 0) {
+                          return setNewIsAddress(true);
+                        }
+                        return dispatch(
+                          createLocation(
+                            {
+                              address: newAddress,
+                            },
+                            () => {
+                              dispatch(getProfile());
+                              setNewAddress("");
+                              setIsShowInput(false);
+                            }
+                          )
+                        );
                       }
                     }}
                   >
@@ -311,7 +339,7 @@ export default function LookupInformation({ dataCategory }) {
 
 export async function getServerSideProps(context) {
   // // Fetch data from external API
-  const categories = await fetch(`${BASE_URL}/api/category`);
+  const categories = await fetch(`${BASE_URL}/api/category?isGetAll=1`);
   const dataCategory = await categories.json();
   // Pass data to the page via props
   return { props: { dataCategory: dataCategory.data } };

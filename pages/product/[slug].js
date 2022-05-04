@@ -57,6 +57,7 @@ export default function Product({ data, dataCategory }) {
   const [isContent, setIsContent] = useState(false);
   const [rate, setRate] = useState(-1);
   const [phone, setPhone] = useState("");
+  const [statusPhone, setStatusPhone] = useState(false);
   const [otp, setOtp] = useState("");
   const [isSend, setIsSend] = useState(false);
   const dispatch = useDispatch();
@@ -68,6 +69,14 @@ export default function Product({ data, dataCategory }) {
   }, [dispatch]);
 
   const handleSubmit = () => {
+    if (
+      phone.trim().length === 0 ||
+      !new RegExp("(0[3|5|7|8|9])+([0-9]{8})", "g").test(phone)
+    ) {
+      setStatusPhone(true);
+      return;
+    }
+
     dispatch(
       login(
         {
@@ -197,9 +206,15 @@ export default function Product({ data, dataCategory }) {
             />
           </Col>
           <Col className="col-xl-4">
-            <Badge color="danger">
-              Giảm giá {((data.price - data.salePrice) / data.price) * 100}%
-            </Badge>
+            {data.price === data.salePrice ? (
+              <Badge color="danger">Trả góp 0%</Badge>
+            ) : (
+              <Badge color="danger">
+                Giảm giá{" "}
+                {Math.round(((data.price - data.salePrice) / data.price) * 100)}
+                %
+              </Badge>
+            )}
             <p className="pt-3">
               <span
                 style={{
@@ -208,8 +223,14 @@ export default function Product({ data, dataCategory }) {
               >
                 {formatMoney(data.salePrice)}
               </span>
-              &nbsp;&nbsp;
-              <del>{formatMoney(data.price)}</del>
+              {data.salePrice === data.price ? (
+                ""
+              ) : (
+                <>
+                  &nbsp;&nbsp;
+                  <del>{formatMoney(data.price)}</del>
+                </>
+              )}
             </p>
             <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-3">
               {data.productVersions.map((e) => (
@@ -491,11 +512,26 @@ export default function Product({ data, dataCategory }) {
                                 placeholder="Số điện thoại"
                                 type="text"
                                 value={phone}
-                                onChange={(e) => setPhone(e.target.value)}
+                                onChange={(e) => {
+                                  setPhone(e.target.value);
+                                  setStatusPhone(false);
+                                }}
                                 valid={isSend}
+                                invalid={statusPhone}
                               />
                               <Button
-                                onClick={() =>
+                                onClick={() => {
+                                  if (
+                                    phone.trim().length === 0 ||
+                                    !new RegExp(
+                                      "(0[3|5|7|8|9])+([0-9]{8})",
+                                      "g"
+                                    ).test(phone)
+                                  ) {
+                                    setStatusPhone(true);
+                                    return;
+                                  }
+
                                   dispatch(
                                     sendOTPToLogin(
                                       {
@@ -503,12 +539,14 @@ export default function Product({ data, dataCategory }) {
                                       },
                                       () => setIsSend(true)
                                     )
-                                  )
-                                }
+                                  );
+                                }}
                               >
                                 Lấy mã OTP
                               </Button>
-                              {/* <FormFeedback>hehe</FormFeedback> */}
+                              <FormFeedback>
+                                Vui lòng nhập số điện thoại
+                              </FormFeedback>
                             </InputGroup>
                           </FormGroup>
                         </Col>
@@ -588,7 +626,7 @@ export async function getServerSideProps(context) {
       notFound: true,
     };
   }
-  const categories = await fetch(`${BASE_URL}/api/category`);
+  const categories = await fetch(`${BASE_URL}/api/category?isGetAll=1`);
   const dataCategory = await categories.json();
   // Pass data to the page via props
   return { props: { data: data.data, dataCategory: dataCategory.data } };

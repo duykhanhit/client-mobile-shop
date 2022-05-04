@@ -8,6 +8,7 @@ module.exports = {
       "127.0.0.1",
       "www.thegioididong.com",
       "cellphones.com.vn",
+      "i.imgur.com",
     ],
   },
 };

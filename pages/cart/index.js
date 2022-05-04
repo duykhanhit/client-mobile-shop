@@ -276,7 +276,7 @@ export default function Cart({ dataCategory }) {
 
 export async function getServerSideProps(context) {
   // // Fetch data from external API
-  const categories = await fetch(`${BASE_URL}/api/category`);
+  const categories = await fetch(`${BASE_URL}/api/category?isGetAll=1`);
   const dataCategory = await categories.json();
   // Pass data to the page via props
   return { props: { dataCategory: dataCategory.data } };

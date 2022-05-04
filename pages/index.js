@@ -95,7 +95,7 @@ export async function getServerSideProps() {
 
   const settingRes = await fetch(`${BASE_URL}/api/setting`);
   const dataSetting = await settingRes.json();
-  const categories = await fetch(`${BASE_URL}/api/category`);
+  const categories = await fetch(`${BASE_URL}/api/category?isGetAll=1`);
   const dataCategory = await categories.json();
   // Pass data to the page via props
   return {

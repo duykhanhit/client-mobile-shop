@@ -4,6 +4,7 @@ export const APIEnum = {
   LOGIN: "/auth/login",
   PROFILE: "/auth/profile",
   GET_TOKEN: "/auth/token",
+  UPDATE_USER: "/auth/update",
   BRANCH: "/branch",
   CATEGORY: "/category",
   COLOR: "/color",

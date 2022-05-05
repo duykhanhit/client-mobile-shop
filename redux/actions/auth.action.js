@@ -3,6 +3,7 @@ import {
   getProfileService,
   loginService,
   sendOTPLogin,
+  updateUserService,
 } from "../../service/auth.service";
 import * as types from "../constants";
 
@@ -69,5 +70,22 @@ export const logout = () => {
       type: types.LOGOUT,
     });
     window.location.reload();
+  };
+};
+
+export const updateUser = (data, onSuccess) => {
+  return async (dispatch) => {
+    try {
+      const response = await updateUserService(data);
+      if (response.statusCode !== 200) {
+        toast.error(response.message);
+      } else {
+        onSuccess();
+        toast.success(response.message);
+      }
+    } catch (error) {
+      console.log(error?.message || error);
+      toast.error(error?.message || error);
+    }
   };
 };

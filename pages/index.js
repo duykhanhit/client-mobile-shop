@@ -77,10 +77,10 @@ export async function getServerSideProps() {
   const resTopView = await fetch(`${BASE_URL}/api/product?orderView=-1`);
   const dataTopView = await resTopView.json();
 
-  const resMobile = await fetch(`${BASE_URL}/api/product?categoryId=1`);
+  const resMobile = await fetch(`${BASE_URL}/api/product?categoryId=7`);
   const dataMobile = await resMobile.json();
 
-  const resLaptop = await fetch(`${BASE_URL}/api/product?categoryId=3`);
+  const resLaptop = await fetch(`${BASE_URL}/api/product?categoryId=6`);
   const dataLaptop = await resLaptop.json();
 
   const settingRes = await fetch(`${BASE_URL}/api/setting`);

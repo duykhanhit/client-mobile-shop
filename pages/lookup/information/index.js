@@ -17,16 +17,17 @@ import {
   Modal,
   ModalHeader,
   ModalBody,
+  Form,
 } from "reactstrap";
 import { BASE_URL } from "constants/config";
 import { useDispatch, useSelector } from "react-redux";
-import { getProfile } from "@redux/actions/auth.action";
+import { getProfile, updateUser } from "@redux/actions/auth.action";
 import { useRouter } from "next/router";
 import { listOrder } from "@redux/actions/order.action";
 import { formatMoney, formatTime } from "common/common";
 import { OrderStatus } from "constants/filter.constant";
 import Link from "next/link";
-import { AiFillEdit, AiFillDelete } from "react-icons/ai";
+import { AiFillEdit, AiFillDelete, AiOutlineMinusCircle } from "react-icons/ai";
 import {
   createLocation,
   deleteLocation,
@@ -46,25 +47,41 @@ export default function LookupInformation({ dataCategory }) {
   const [isShowInput, setIsShowInput] = useState(false);
   const [address, setAddress] = useState("");
   const [newAddress, setNewAddress] = useState("");
+  const [fullname, setFullname] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [gender, setGender] = useState("");
+  const [isFullname, setIsFullname] = useState(false);
+  const [isGender, setIsGender] = useState(false);
+
   const dispatch = useDispatch();
   const state = useSelector((state) => state);
   const router = useRouter();
 
   useEffect(() => {
-    dispatch(getProfile());
-
     if (!state.auth.token) {
       router.push("/lookup");
     }
+  }, []);
 
-    dispatch(listOrder({ page: page, isMe: 1 }));
-  }, [dispatch]);
+  useEffect(() => {
+    setFullname(state?.auth?.user?.fullname);
+    setEmail(state?.auth?.user?.email);
+    setPhone(state?.auth?.user?.phone);
+    setGender(state?.auth?.user?.gender);
+  }, [state.user]);
 
   useEffect(() => {
     dispatch(listOrder({ page: page, isMe: 1 }));
   }, [dispatch, page]);
 
   const handleChangeTab = (e) => {
+    if (e === 2) {
+      setFullname(state?.auth?.user?.fullname);
+      setEmail(state?.auth?.user?.email);
+      setPhone(state?.auth?.user?.phone);
+      setGender(state?.auth?.user?.gender);
+    }
     setTab(e);
   };
   return (
@@ -161,17 +178,84 @@ export default function LookupInformation({ dataCategory }) {
                   <CardBody>
                     <CardTitle tag="h5">Thông tin cá nhân</CardTitle>
                     <Row>
-                      <Col md={12}>Họ tên: {state.auth?.user?.fullname} </Col>
-                      <Col md={12}>
-                        Số điện thoại: {state.auth?.user?.phone}
-                      </Col>
+                      <Form>
+                        <FormGroup>
+                          <Input
+                            id="exampleAddress"
+                            name="address"
+                            placeholder="Họ tên"
+                            value={fullname}
+                            onChange={(e) => {
+                              setFullname(e.target.value);
+                              setIsFullname(false);
+                            }}
+                            invalid={isFullname}
+                          />
+                          <FormFeedback>Vui lòng nhập họ tên</FormFeedback>
+                        </FormGroup>
+                        <FormGroup>
+                          <Input
+                            id="exampleAddress2"
+                            name="address2"
+                            placeholder="Email"
+                            value={email}
+                            disabled
+                          />
+                        </FormGroup>
+                        <FormGroup>
+                          <Input
+                            id="exampleAddress2"
+                            name="address2"
+                            placeholder="Điện thoại"
+                            value={phone}
+                            disabled
+                          />
+                        </FormGroup>
+                        <FormGroup>
+                          <Input
+                            id="exampleSelect"
+                            name="select"
+                            type="select"
+                            invalid={isGender}
+                            value={gender}
+                            onChange={(e) => {
+                              setGender(e.target.value);
+                              setIsGender(false);
+                            }}
+                          >
+                            <option value="" disabled selected>
+                              Giới tính
+                            </option>
+                            <option value={0}>Nam</option>
+                            <option value={1}>Nữ</option>
+                          </Input>
+                          <FormFeedback>Vui lòng chọn giới tính</FormFeedback>
+                        </FormGroup>
+                      </Form>
+                      <div className="text-center">
+                        <Button
+                          color="danger"
+                          onClick={() => {
+                            if (!fullname.trim().length) {
+                              return setIsFullname(true);
+                            }
+                            dispatch(
+                              updateUser({ fullname, gender: +gender }, () => {
+                                dispatch(getProfile());
+                              })
+                            );
+                          }}
+                        >
+                          Cập nhật
+                        </Button>
+                      </div>
                     </Row>
                   </CardBody>
                 </Card>
                 <h5>
                   Danh sách địa chỉ{" "}
                   <Button
-                    color="primary"
+                    color="warning"
                     className="text-white"
                     onClick={() => {
                       setIsShowInput(true);
@@ -280,7 +364,7 @@ export default function LookupInformation({ dataCategory }) {
                           setNewAddress("");
                         }}
                       >
-                        <AiFillDelete color="#d70018" /> Huỷ
+                        <AiOutlineMinusCircle color="#d70018" /> Huỷ
                       </span>
                     </ListGroupItem>
                   ) : (
@@ -289,7 +373,7 @@ export default function LookupInformation({ dataCategory }) {
                 </ListGroup>
                 <div className="text-center mt-3">
                   <Button
-                    color="success"
+                    color="danger"
                     onClick={() => {
                       if (!isShowInput) {
                         if (!isEmpty(editedItem)) {

@@ -92,17 +92,12 @@ export default function DetailInformation({ id, dataCategory }) {
                             color: "red",
                           }}
                         >
-                          {formatMoney(e.salePrice || e.price)}
+                          {formatMoney(e.orderPrice)}
                         </span>
-                        &nbsp;&nbsp;
-                        <del>{formatMoney(e.price)}</del>
-                        &nbsp;&nbsp;
-                        <Badge color="danger">
-                          Giảm giá {((e.price - e.salePrice) / e.price) * 100}%
-                        </Badge>
                       </p>
                       <div className="d-flex align-items-center">
                         <b style={{ width: 100 }}>Số lượng: </b> {e.quantity}
+                        &nbsp;&nbsp;sản phẩm
                       </div>
                     </div>
                   </div>

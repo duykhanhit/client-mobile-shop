@@ -327,10 +327,12 @@ export default function Product({ data, dataCategory }) {
                   <Row>
                     <Col className="text-center">
                       <h3>
-                        {data.reviews?.reduce(
-                          (total, item) => total + item.rate,
-                          0
-                        ) / (data.reviews?.length || 1)}
+                        {data.reviews?.length
+                          ? data.reviews?.reduce(
+                              (total, item) => total + item.rate,
+                              0
+                            ) / (data.reviews?.length || 1)
+                          : 5}
                         /5
                       </h3>
                       {handleRate(

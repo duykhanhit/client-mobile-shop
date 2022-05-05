@@ -1,5 +1,5 @@
 import MainLayout from "@components/MainLayout";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
   Col,
   Container,
@@ -8,18 +8,15 @@ import {
   Card,
   CardTitle,
   Alert,
-  Badge,
 } from "reactstrap";
 import { BASE_URL } from "constants/config";
 import { formatMoney } from "common/common";
-import ItemCart from "@components/ItemCart";
-import { getFromLocal } from "common/local-storage";
 import { useDispatch, useSelector } from "react-redux";
 import { detailOrder } from "@redux/actions/order.action";
 import Link from "next/link";
 import { OrderStatus } from "constants/filter.constant";
-import { isEmpty } from "lodash";
 import { useRouter } from "next/router";
+import { IoIosArrowBack } from "react-icons/io";
 
 export default function DetailInformation({ id, dataCategory }) {
   const dispatch = useDispatch();
@@ -35,8 +32,17 @@ export default function DetailInformation({ id, dataCategory }) {
       <Container>
         <div className="mt-3 row row-cols-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-2">
           <Col className="col-xl-3 col-lg-3 col-12"></Col>
-          <Col className="col-xl-6 col-lg-9 col-12 bg-white border-radius-10 ">
-            <h5 className="p-2 mb-0 text-center">Chi tiết đơn hàng</h5>
+          <Col className="col-xl-6 col-lg-9 col-12 bg-white border-radius-10 d-flex justify-content-between align-items-center">
+            <Link href="/lookup/information">
+              <a className="text-decoration-none link-dark">
+                <h6 className="link-hover">
+                  <IoIosArrowBack />
+                  Trở lại
+                </h6>
+              </a>
+            </Link>
+            <h5 className="p-2 mb-0 ">Chi tiết đơn hàng</h5>
+            <h5 className="p-2 mb-0 "></h5>
           </Col>
           <Col className="col-xl-3 col-lg-3 col-12"></Col>
         </div>
@@ -104,6 +110,16 @@ export default function DetailInformation({ id, dataCategory }) {
                 </CardBody>
               </Card>
             ))}
+            <Alert color="danger">
+              Thành tiền:{" "}
+              {formatMoney(
+                state.order?.item?.orderDetails?.reduce(
+                  (total, item) => total + item.quantity * item.orderPrice,
+                  0
+                ) *
+                  ((100 - (state.order?.coupon?.value || 0)) / 100)
+              )}
+            </Alert>
           </Col>
           <Col className="col-xl-3 col-lg-3 col-12"></Col>
         </div>

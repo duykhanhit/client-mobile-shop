@@ -110,11 +110,14 @@ export const onChangeQuantityItemInLocal = (id, quantity) => {
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
     if (item.version.id === id) {
-      if (quantity > item.version.quantity || quantity <= 0) {
+      if (quantity > item.version.quantity) {
         toast.error(
           `Số lượng sản phẩm không hợp lệ, chỉ còn ${item.version.quantity} sản phẩm`
         );
-        return false;
+        return [false, 1];
+      } else if (!quantity || +quantity <= 0) {
+        toast.error(`Số lượng sản phẩm đã đạt tối thiểu`);
+        return [false, 0];
       } else {
         item.version.currentQuantity = quantity;
       }
@@ -129,5 +132,5 @@ export const onChangeQuantityItemInLocal = (id, quantity) => {
       })
     );
 
-  return true;
+  return [true, true];
 };

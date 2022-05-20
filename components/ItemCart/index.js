@@ -109,17 +109,25 @@ export default function ItemCart({ product, setIsDelete, isDelete, isView }) {
                     value={currentQuantity}
                     className="p-1"
                     onChange={(e) => {
-                      const status = onChangeQuantityItemInLocal(
+                      setCurrentQuantity(e.target.value);
+                    }}
+                    onBlur={() => {
+                      const [status, check] = onChangeQuantityItemInLocal(
                         product.version.id,
-                        e.target.value
+                        currentQuantity
                       );
-                      if (status) setCurrentQuantity(e.target.value);
+                      if (status) setCurrentQuantity(currentQuantity);
                       else {
-                        setCurrentQuantity(product.version.quantity);
-                        onChangeQuantityItemInLocal(
-                          product.version.id,
-                          product.version.quantity
-                        );
+                        if (check === 1) {
+                          setCurrentQuantity(product.version.quantity);
+                          onChangeQuantityItemInLocal(
+                            product.version.id,
+                            product.version.quantity
+                          );
+                        } else {
+                          setCurrentQuantity(1);
+                          onChangeQuantityItemInLocal(product.version.id, 1);
+                        }
                       }
                       setIsDelete(!isDelete);
                     }}

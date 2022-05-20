@@ -8,7 +8,10 @@ import { BASE_URL } from "constants/config";
 export default function Item({ item }) {
   return (
     <div className="col p-2 custom-scale">
-      <div className="bg-white border-radius-10 shadow p-2 text-center">
+      <div
+        className="bg-white border-radius-10 shadow p-2 text-center"
+        style={{ height: 390 }}
+      >
         <Image
           alt="demo"
           className="rounded mx-auto d-block pt-3 img-fluid cursor-pointer"

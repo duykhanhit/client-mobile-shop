@@ -1,6 +1,6 @@
 import { formatMoney } from "common/common";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Badge,
   Card,
@@ -18,9 +18,17 @@ import { BASE_URL } from "constants/config";
 import {
   changeQuantityItemInLocal,
   deleteItemInLocal,
+  onChangeQuantityItemInLocal,
 } from "common/local-storage";
 
 export default function ItemCart({ product, setIsDelete, isDelete, isView }) {
+  const [currentQuantity, setCurrentQuantity] = useState(
+    product.version.currentQuantity
+  );
+
+  useEffect(() => {
+    setCurrentQuantity(product.version.currentQuantity);
+  }, [product.version.currentQuantity]);
   const handleChangeQuantity = (id, mode) => {
     changeQuantityItemInLocal(id, mode);
     setIsDelete(!isDelete);
@@ -98,8 +106,23 @@ export default function ItemCart({ product, setIsDelete, isDelete, isView }) {
                     <AiOutlineMinus />
                   </InputGroupText>
                   <Input
-                    value={product.version.currentQuantity}
+                    value={currentQuantity}
                     className="p-1"
+                    onChange={(e) => {
+                      const status = onChangeQuantityItemInLocal(
+                        product.version.id,
+                        e.target.value
+                      );
+                      if (status) setCurrentQuantity(e.target.value);
+                      else {
+                        setCurrentQuantity(product.version.quantity);
+                        onChangeQuantityItemInLocal(
+                          product.version.id,
+                          product.version.quantity
+                        );
+                      }
+                      setIsDelete(!isDelete);
+                    }}
                   />
                   <InputGroupText
                     className="bg-white cursor-pointer"

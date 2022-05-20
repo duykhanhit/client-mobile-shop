@@ -198,7 +198,6 @@ export default function Lookup({ dataCategory }) {
                     }}
                   />
                 </p>
-                <p>Đổi số điện thoại</p>
               </>
             )}
           </Col>

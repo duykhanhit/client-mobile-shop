@@ -72,12 +72,17 @@ export default function Category({
     refreshData();
   };
 
+  useEffect(() => {
+    setPage(1);
+  }, [router.query.slug]);
+
   const handleLoadMore = async () => {
     setIsLoadingLoadMore(true);
     const newResponse = await fetch(
       `${BASE_URL}/api/product?${stringify({
         ...router.query,
         page: page + 1,
+        categoryId: router.query.slug,
       })}`
     );
     const newProducts = await newResponse.json();

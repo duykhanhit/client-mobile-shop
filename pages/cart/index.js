@@ -26,6 +26,7 @@ import { toast } from "react-toastify";
 export default function Cart({ dataCategory }) {
   const [isDelete, setIsDelete] = useState(false);
   const [step, setStep] = useState(0);
+  const [status, setStatus] = useState(0);
   const [information, setInformation] = useState({
     fullname: "",
     phone: "",
@@ -123,7 +124,7 @@ export default function Cart({ dataCategory }) {
     if (data.statusCode === 201) {
       toast.success(data.message);
       resetItemInLocal();
-      router.push("/lookup");
+      setStatus(1);
     } else {
       toast.error(data.message);
     }
@@ -131,146 +132,168 @@ export default function Cart({ dataCategory }) {
 
   return (
     <MainLayout title={"Giỏ hàng"} dataCategory={dataCategory}>
-      <Container>
-        <div className="mt-3 row row-cols-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-2">
-          <Col className="col-xl-3 col-lg-3 col-12"></Col>
-          <Col className="col-xl-6 col-lg-9 col-12 bg-white border-radius-10 ">
-            <h5 className="p-2 mb-0 text-center">{STEP_ORDER[step]}</h5>
-          </Col>
-          <Col className="col-xl-3 col-lg-3 col-12"></Col>
-        </div>
-        <div className="mt-3 pb-3 row row-cols-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-2">
-          <Col className="col-xl-3 col-lg-3 col-12"></Col>
-          <Col className="col-xl-6 col-lg-9 col-12 bg-white border-radius-10 ">
-            {step === STEP_ORDER_ENUM.CART ? (
-              getFromLocal("cart")?.length ? (
-                getFromLocal("cart").map((e) => (
-                  <ItemCart
-                    setIsDelete={setIsDelete}
-                    isDelete={isDelete}
-                    product={e}
-                  />
-                ))
-              ) : (
-                <h4 className="text-center">Giỏ hàng trống</h4>
-              )
-            ) : step === STEP_ORDER_ENUM.INFORMATION ? (
-              <InfoCart
-                setInformation={setInformation}
-                information={information}
-                isClick={isClick}
-              />
-            ) : (
-              <>
-                <Card className="border-radius-10 mt-3 mb-3">
-                  <CardBody>
-                    <CardTitle tag="h5">Thông tin người mua</CardTitle>
-                    <Row>
-                      <Col md={12}>
-                        Họ tên: ({GenderEnum[information.gender]}){" "}
-                        {information.fullname}
-                      </Col>
-                      <Col md={12}>Số điện thoại: {information.phone}</Col>
-                      <Col md={12}>Địa chỉ: {information.location}</Col>
-                    </Row>
-                  </CardBody>
-                </Card>
-                <h5>Danh sách sản phẩm</h5>
-                {getFromLocal("cart").map((e) => (
-                  <ItemCart
-                    setIsDelete={setIsDelete}
-                    isDelete={isDelete}
-                    product={e}
-                    isView={true}
-                  />
-                ))}
-              </>
-            )}
-            {getFromLocal("cart")?.length ? (
-              <>
-                <Alert color="danger">
-                  <b>Thành tiền:</b>{" "}
-                  {formatMoney(
-                    getFromLocal("cart").reduce(
-                      (total, item) =>
-                        total +
-                        item.version.salePrice * item.version.currentQuantity,
-                      0
-                    ) *
-                      ((100 - information.value || 0) / 100)
-                  )}
-                  {information.value ? (
-                    <>
-                      <b>&nbsp;&nbsp;Tiết kiệm:</b>{" "}
-                      {formatMoney(
-                        getFromLocal("cart").reduce(
-                          (total, item) =>
-                            total +
-                            item.version.salePrice *
-                              item.version.currentQuantity,
-                          0
-                        ) *
-                          ((information.value || 0) / 100)
-                      )}
-                    </>
-                  ) : (
-                    ""
-                  )}
-                </Alert>
-                {step === STEP_ORDER_ENUM.CART ? (
-                  <div className="d-flex justify-content-between mb-3">
-                    <div></div>
-                    <Button
-                      className="float-right text-white"
-                      color="primary"
-                      onClick={() => setStep(STEP_ORDER_ENUM.INFORMATION)}
-                    >
-                      Tiếp tục
-                    </Button>
-                  </div>
-                ) : step === STEP_ORDER_ENUM.INFORMATION ? (
-                  <div className="d-flex justify-content-between mb-3">
-                    <Button
-                      className="float-right"
-                      color="danger"
-                      onClick={() => setStep(STEP_ORDER_ENUM.CART)}
-                    >
-                      Trở về
-                    </Button>
-                    <Button
-                      className="float-right text-white"
-                      color="primary"
-                      onClick={validateForm}
-                    >
-                      Tiếp tục
-                    </Button>
-                  </div>
+      {status === 0 ? (
+        <Container>
+          <div className="mt-3 row row-cols-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-2">
+            <Col className="col-xl-3 col-lg-3 col-12"></Col>
+            <Col className="col-xl-6 col-lg-9 col-12 bg-white border-radius-10 ">
+              <h5 className="p-2 mb-0 text-center">{STEP_ORDER[step]}</h5>
+            </Col>
+            <Col className="col-xl-3 col-lg-3 col-12"></Col>
+          </div>
+          <div className="mt-3 pb-3 row row-cols-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-2">
+            <Col className="col-xl-3 col-lg-3 col-12"></Col>
+            <Col className="col-xl-6 col-lg-9 col-12 bg-white border-radius-10 ">
+              {step === STEP_ORDER_ENUM.CART ? (
+                getFromLocal("cart")?.length ? (
+                  getFromLocal("cart").map((e) => (
+                    <ItemCart
+                      setIsDelete={setIsDelete}
+                      isDelete={isDelete}
+                      product={e}
+                    />
+                  ))
                 ) : (
-                  <div className="d-flex justify-content-between mb-3">
-                    <Button
-                      className="float-right"
-                      color="danger"
-                      onClick={() => setStep(STEP_ORDER_ENUM.INFORMATION)}
-                    >
-                      Trở về
-                    </Button>
-                    <Button
-                      className="float-right text-white"
-                      color="primary"
-                      onClick={handleCheckout}
-                    >
-                      Đặt hàng
-                    </Button>
-                  </div>
-                )}
-              </>
-            ) : (
-              ""
-            )}
-          </Col>
-          <Col className="col-xl-3 col-lg-3 col-12"></Col>
-        </div>
-      </Container>
+                  <h4 className="text-center">Giỏ hàng trống</h4>
+                )
+              ) : step === STEP_ORDER_ENUM.INFORMATION ? (
+                <InfoCart
+                  setInformation={setInformation}
+                  information={information}
+                  isClick={isClick}
+                />
+              ) : (
+                <>
+                  <Card className="border-radius-10 mt-3 mb-3">
+                    <CardBody>
+                      <CardTitle tag="h5">Thông tin người mua</CardTitle>
+                      <Row>
+                        <Col md={12}>
+                          Họ tên: ({GenderEnum[information.gender]}){" "}
+                          {information.fullname}
+                        </Col>
+                        <Col md={12}>Số điện thoại: {information.phone}</Col>
+                        <Col md={12}>Địa chỉ: {information.location}</Col>
+                      </Row>
+                    </CardBody>
+                  </Card>
+                  <h5>Danh sách sản phẩm</h5>
+                  {getFromLocal("cart").map((e) => (
+                    <ItemCart
+                      setIsDelete={setIsDelete}
+                      isDelete={isDelete}
+                      product={e}
+                      isView={true}
+                    />
+                  ))}
+                </>
+              )}
+              {getFromLocal("cart")?.length ? (
+                <>
+                  <Alert color="danger">
+                    <b>Thành tiền:</b>{" "}
+                    {formatMoney(
+                      getFromLocal("cart").reduce(
+                        (total, item) =>
+                          total +
+                          item.version.salePrice * item.version.currentQuantity,
+                        0
+                      ) *
+                        ((100 - information.value || 0) / 100)
+                    )}
+                    {information.value ? (
+                      <>
+                        <b>&nbsp;&nbsp;Tiết kiệm:</b>{" "}
+                        {formatMoney(
+                          getFromLocal("cart").reduce(
+                            (total, item) =>
+                              total +
+                              item.version.salePrice *
+                                item.version.currentQuantity,
+                            0
+                          ) *
+                            ((information.value || 0) / 100)
+                        )}
+                      </>
+                    ) : (
+                      ""
+                    )}
+                  </Alert>
+                  {step === STEP_ORDER_ENUM.CART ? (
+                    <div className="d-flex justify-content-between mb-3">
+                      <div></div>
+                      <Button
+                        className="float-right text-white"
+                        color="primary"
+                        onClick={() => setStep(STEP_ORDER_ENUM.INFORMATION)}
+                      >
+                        Tiếp tục
+                      </Button>
+                    </div>
+                  ) : step === STEP_ORDER_ENUM.INFORMATION ? (
+                    <div className="d-flex justify-content-between mb-3">
+                      <Button
+                        className="float-right"
+                        color="danger"
+                        onClick={() => setStep(STEP_ORDER_ENUM.CART)}
+                      >
+                        Trở về
+                      </Button>
+                      <Button
+                        className="float-right text-white"
+                        color="primary"
+                        onClick={validateForm}
+                      >
+                        Tiếp tục
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="d-flex justify-content-between mb-3">
+                      <Button
+                        className="float-right"
+                        color="danger"
+                        onClick={() => setStep(STEP_ORDER_ENUM.INFORMATION)}
+                      >
+                        Trở về
+                      </Button>
+                      <Button
+                        className="float-right text-white"
+                        color="primary"
+                        onClick={handleCheckout}
+                      >
+                        Đặt hàng
+                      </Button>
+                    </div>
+                  )}
+                </>
+              ) : (
+                ""
+              )}
+            </Col>
+            <Col className="col-xl-3 col-lg-3 col-12"></Col>
+          </div>
+        </Container>
+      ) : (
+        <Container>
+          <div className="mt-3 row row-cols-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-2">
+            <Col className="col-xl-3 col-lg-3 col-12"></Col>
+            <Col className="col-xl-6 col-lg-9 col-12 bg-white border-radius-10 ">
+              <h5 className="p-2 mb-0 text-center">Đặt hàng thành công!</h5>
+            </Col>
+            <Col className="col-xl-3 col-lg-3 col-12"></Col>
+          </div>
+          <div className="mt-3 pb-3 row row-cols-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-2">
+            <Col className="col-xl-3 col-lg-3 col-12"></Col>
+            <Col className="col-xl-6 col-lg-9 col-12  border-radius-10 ">
+              <Alert className="text-center">
+                Cảm ơn bạn đã đặt hàng tại hệ thống của chúng tôi. <br />
+                Hãy chú ý điện thoại để nhận được thông tin đơn hàng!
+              </Alert>
+            </Col>
+            <Col className="col-xl-3 col-lg-3 col-12"></Col>
+          </div>
+        </Container>
+      )}
     </MainLayout>
   );
 }

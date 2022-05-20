@@ -98,10 +98,6 @@ export default function Slide({ dataCategory }) {
                 src: "https://cdn.cellphones.com.vn/media/ltsoft/promotion/ip13-xl-sh-690-300-max.png",
               },
               {
-                key: 4,
-                src: "https://cdn.cellphones.com.vn/media/ltsoft/promotion/LG_Stand.png",
-              },
-              {
                 key: 5,
                 src: "https://cdn.cellphones.com.vn/media/ltsoft/promotion/photo_2022-04-28_11-15-29.jpg",
               },

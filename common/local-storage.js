@@ -103,3 +103,31 @@ export const changeQuantityItemInLocal = (id, mode) => {
       })
     );
 };
+
+export const onChangeQuantityItemInLocal = (id, quantity) => {
+  const items = getFromLocal("cart");
+
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
+    if (item.version.id === id) {
+      if (quantity > item.version.quantity || quantity <= 0) {
+        toast.error(
+          `Số lượng sản phẩm không hợp lệ, chỉ còn ${item.version.quantity} sản phẩm`
+        );
+        return false;
+      } else {
+        item.version.currentQuantity = quantity;
+      }
+    }
+  }
+
+  typeof window !== "undefined" &&
+    localStorage.setItem(
+      "cart",
+      JSON.stringify({
+        carts: items,
+      })
+    );
+
+  return true;
+};
